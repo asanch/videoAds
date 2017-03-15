@@ -234,8 +234,9 @@
 		height: 250px;
 		position:relative;
 		padding:5px;
-		background-color:black;
+		background-color:#E4E7EC;
 		overflow: auto;
+		border: 1px solid #000000;
 	}
 	#autoPlayer{
 		position:absolute;
@@ -251,7 +252,7 @@
 		position:absolute;
 		width:125px;
 		font-size: 11px;
-		color:#ffffff;
+		color:black;
 		text-align:center;
 		margin-top:205px;
 	}
@@ -290,14 +291,20 @@
 		opacity:0;
 		z-index:2;
 	}
+	.thumbnailsBg{
+		position:absolute;
+		z-index:0;
+		background-color:white;
+		height:120px;
+		width:170px;
+		margin:150px 0px 0px 130px;
+		
+	}
 	.activeVideo{
 		border: 2px solid #cc181e;
 	}
 	.inactiveVideo{
 		opacity:0.7;
-	}
-	.inactiveVideo:hover{
-		opacity:1;
 	}
 	</style>
 </head>
@@ -312,7 +319,7 @@
 	<div id="text">
 		This video is for the greatest brand in the known universe.
 	</div>
-
+	
 	<div id="player1" class="slot1 thumbnailVideo"></div>
 	<img id="slot1" class="slot1 thumbnail inactiveVideo" src="https://s3-us-west-2.amazonaws.com/apollo-creative/thumbnail_ricky.png"/>
 
@@ -321,6 +328,8 @@
 
 	<div id="player3" class="slot3 thumbnailVideo"></div>
 	<img id="slot3" class="slot3 thumbnail activeVideo" src="https://s3-us-west-2.amazonaws.com/apollo-creative/testvidtn.png"/>
+	
+	<!--<div class="thumbnailsBg"></div>-->
 </div>
 </body>
 </html>
