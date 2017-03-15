@@ -1,0 +1,291 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>300x250 Video Banner</title>
+<script type="text/javascript">
+	/* overview
+*/
+
+// Set all the veriables that define content. 
+	  var keyLineFrameColor = '#333364';									// the color the frame will be
+	  var showControls = 1; 												// 0 means no controls 1 means with controls 
+	  var defaultVolume = 50;											// volume the videos start to play at. 
+
+// set the perams for each video   
+	  var videoID1 = 'l4Y-B0A7Y-I';										// Video 1 perams 
+	  var quality1 = 'small'; 											// small, medium, large, hd720, hd1080, highres, default
+	  var start1= 2;
+	  var end1= '15';
+	  var volume1=100;
+	   
+	  var videoID2 = 'P5ZOwNK6n9U'; 										// Video 2 perams
+	  var quality2 = 'default';
+	  var start2= 'null';
+	  var end2= 'null';
+	  var volume2 = 'null';
+	  
+	  var videoID3 = 'CgAIqP6hNlQ'; 										// Video 3 perams
+	  var quality3 = 'default'; 	
+	  var start3= 'null';
+	  var end3= 'null';
+	  var volume3=100;
+
+// Set the auto play perameters 
+	  var theVideoToAutoPlay = 1; 										// which video to autoplay
+	  var startTime = 19; 												// where the video should play from 
+	  var playDuration = 15; 											// how long the video should play for on auto play
+	  var endTime = startTime+playDuration; 							// Can change to just the end time if that is simpler. 
+	  var quality = 'medium'; 											// small, medium, large, hd720, hd1080, highres, default
+
+// Set the clickTag	  
+	//var clickTag = getParameterByName('clickTAG');
+	
+// Load the Youtube Iframe API
+	var tag = document.createElement('script');
+	tag.src = "https://www.youtube.com/iframe_api";
+	var firstScriptTag = document.getElementsByTagName('script')[0];
+	firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+	
+//Player vars
+	var players = {};
+	var autoPlayer;
+	
+	function onYouTubeIframeAPIReady() {
+	autoPlayer = new YT.Player('autoPlayer', {									
+        height: '150',
+        width: '300',
+		videoId: videoID1,
+		playerVars: {
+			'rel': 0,
+			'enablejsapi': 1,
+			'iv_load_policy': 3,
+			'autoplay': 1,
+			'controls': 0,
+			'showinfo': 0,
+			'cc_load_policy': 0
+		}
+	});
+	players['player0'] = new YT.Player('player0', {									
+        height: '150',
+        width: '300',
+		videoId: videoID1,
+		playerVars: {
+			'rel': 0,
+			'enablejsapi': 1,
+			'iv_load_policy': 3,
+			'autoplay': 0,
+			'controls': 1,
+			'showinfo': 0,
+			'cc_load_policy': 0
+		}
+	});
+	players['player1'] = new YT.Player('player1', {
+		height: '50',
+        width: '82',
+		videoId: videoID2,
+		playerVars: {
+			'rel': 0,
+			'enablejsapi': 1,
+			'iv_load_policy': 3,
+			'autoplay': 0,
+			'controls': 1,
+			'showinfo': 0,
+			'cc_load_policy': 0
+		}	
+	});
+	players['player2'] = new YT.Player('player2', {
+		height: '50',
+        width: '82',
+		videoId: videoID3,
+		playerVars: {
+			'rel': 0,
+			'enablejsapi': 1,
+			'iv_load_policy': 3,
+			'autoplay': 0,
+			'controls': 1,
+			'showinfo': 0,
+			'cc_load_policy': 0
+		}
+	});
+  		autoPlayer.addEventListener("onReady", "onYouTubeAutoPlayerReady");
+		autoPlayer.addEventListener("onStateChange", "onYouTubeAutoPlayerStateChange");
+		players['player0'].addEventListener("onStateChange", "onYouTubePlayersStateChange");
+  		players['player1'].addEventListener("onStateChange", "onYouTubePlayersStateChange");
+		players['player2'].addEventListener("onStateChange", "onYouTubePlayersStateChange");
+	}
+		
+	// static dictionary of the thumbnail slots each video belongs to
+	var positions = {'player0': 'slot3','player1': 'slot1','player2':'slot2'}
+
+	function onYouTubeAutoPlayerReady(event){
+		autoPlayer.mute();							// Autoplay player is ready for play, mute onload
+	}
+	
+	function onYouTubeAutoPlayerStateChange(event){ 
+		if(event.data == 0){						// Autoplay player has ended 
+			removeAutoPlay();
+		}
+	}
+
+	function onYouTubePlayersStateChange(event){
+		if(event.data == 0){						// A player has ended								
+		}
+		if(event.data == 1){						// A player has started
+			moveVideoAndPlay(event.target.a);
+		}
+		if(event.data == 2){						// A player has been paused
+		}
+		if(event.data == 3){						// A player is buffering
+			if(autoPlayer.getIframe() != null){
+				removeAutoPlay();
+			}
+			moveVideoAndPlay(event.target.a);
+		}
+	}
+	
+	function moveVideoAndPlay(player){
+		var elmts = document.getElementsByClassName('slot0');
+		for(i=0;i<elmts.length; i++){
+			if(elmts[i].height == '150'){
+				var nowPlaying = elmts[i];
+				}
+		}
+		if(player != nowPlaying){
+			moveBack(nowPlaying);
+			moveToPlay(player);
+			selectVideoForView(player);
+		}
+	}
+	
+	function moveBack(player){
+		players[player.id].pauseVideo();
+		player.width = 82;
+		player.height = 50;
+		player.className = positions[player.id];
+		player.className += ' thumbnailVideo';
+	}
+	
+	function moveToPlay(player){
+		player.width = 300;
+		player.height = 150;
+		player.className = 'slot0';
+	}
+	function removeAutoPlay(){
+		document.getElementById("player0").className += " player0";
+		document.getElementById("autoplayClick").style.display = "none";
+		autoPlayer.destroy();
+	}
+
+	function selectVideoForView(player){
+		var vidNodes = document.getElementsByClassName('thumbnail');
+		for(var i=0; i< vidNodes.length; i++){
+			if (vidNodes[i] == document.getElementById(positions[player.id])){
+				vidNodes[i].classList.remove("inactiveVideo");
+				vidNodes[i].classList.add("activeVideo");
+			}else{
+				vidNodes[i].classList.remove("activeVideo");
+				vidNodes[i].classList.add("inactiveVideo");
+			}
+		}
+	};
+	</script>
+<style>
+	body{
+		font-family: proxima-nova,"Helvetica Neue",Arial,sans-serif;
+	}
+	#container{
+		width:300px;
+		height: 250px;
+		position:relative;
+		padding:5px;
+		background-color:black;
+		overflow: auto;
+	}
+	#autoPlayer{
+		position:absolute;
+		z-index:1;
+	}
+	#autoplayClick{
+		position:absolute;
+		z-index:2;
+		height:150px;
+		width:300px;
+	}
+	#text{
+		position:absolute;
+		width:125px;
+		font-size: 11px;
+		color:#ffffff;
+		text-align:center;
+		margin-top:205px;
+	}
+	#player0{
+		z-index:3;
+	}
+	.slot0{
+		margin:0px;
+		position:absolute;
+	}
+	.slot1{
+		margin:153px 0px 0px 133px;
+		position:absolute;
+	}
+	.slot2{
+		margin:153px 0px 0px 215px;
+		position:absolute;
+	}
+	.slot3{
+		margin:203px 0px 0px 175px;
+		position:absolute;
+	}
+	.player0{
+		opacity:1 !important;
+	}
+	.brandImg{
+		position:absolute;
+		height:50px;
+		margin:153px 0px 0px 0px;
+	}
+	.thumbnail{
+		height:45px;
+		z-index:1;
+	}
+	.thumbnailVideo{
+		opacity:0;
+		z-index:2;
+	}
+	.activeVideo{
+		border: 2px solid #cc181e;
+	}
+	.inactiveVideo{
+		opacity:0.7;
+	}
+	.inactiveVideo:hover{
+		opacity:1;
+	}
+	</style>
+</head>
+
+<body>
+<div id="container">
+	<div id="player0" class="slot0 thumbnailVideo"></div>
+	<div id="autoPlayer" class="slot0"></div>
+	<img id="autoplayClick" class="slot0" src="https://s3-us-west-2.amazonaws.com/apollo-creative/342x193-Video-RPWS.png"/>
+
+	<img class="brandImg" src="https://s3-us-west-2.amazonaws.com/apollo-creative/quantcastBrand.png"/>
+	<div id="text">
+		This video is for the greatest brand in the known universe.
+	</div>
+
+	<div id="player1" class="slot1 thumbnailVideo"></div>
+	<img id="slot1" class="slot1 thumbnail inactiveVideo" src="https://s3-us-west-2.amazonaws.com/apollo-creative/thumbnail_ricky.png"/>
+
+	<div id="player2" class="slot2 thumbnailVideo"></div>
+	<img id="slot2" class="slot2 thumbnail inactiveVideo" src="https://s3-us-west-2.amazonaws.com/apollo-creative/thumbnail_patrick.png"/>
+
+	<div id="player3" class="slot3 thumbnailVideo"></div>
+	<img id="slot3" class="slot3 thumbnail activeVideo" src="https://s3-us-west-2.amazonaws.com/apollo-creative/testvidtn.png"/>
+</div>
+</body>
+</html>
