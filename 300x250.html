@@ -46,7 +46,7 @@
 	}
 
 // Set the clickTag	  
-	//var clickTag = getParameterByName('clickTAG');
+	var clickTag = "https://www.quantcast.com/";
 	
 // Load the Youtube Iframe API
 	var tag = document.createElement('script');
@@ -237,10 +237,9 @@
 		font-family: proxima-nova,"Helvetica Neue",Arial,sans-serif;
 	}
 	#container{
-		width:300px;
-		height: 250px;
+		width:299px;
+		height: 249px;
 		position:relative;
-		padding:5px;
 		background-color:#E4E7EC;
 		overflow: auto;
 		border: 1px solid #000000;
@@ -261,7 +260,7 @@
 		font-size: 11px;
 		color:black;
 		text-align:center;
-		margin-top:210px;
+		margin:208px 0px 0px 5px;
 	}
 	#player0{
 		z-index:3;
@@ -271,15 +270,15 @@
 		position:absolute;
 	}
 	.slot1{
-		margin:155px 0px 0px 135px;
+		margin:153px 0px 0px 133px;
 		position:absolute;
 	}
 	.slot2{
-		margin:155px 0px 0px 220px;
+		margin:153px 0px 0px 215px;
 		position:absolute;
 	}
 	.slot3{
-		margin:205px 0px 0px 175px;
+		margin:201px 0px 0px 168px;
 		position:absolute;
 	}
 	.player0{
@@ -288,7 +287,8 @@
 	.brandImg{
 		position:absolute;
 		height:50px;
-		margin:153px 0px 0px 0px;
+		margin:153px 0px 0px 3px;
+		cursor: pointer;
 	}
 	.thumbnail{
 		height:45px;
@@ -308,7 +308,7 @@
 		
 	}
 	.activeVideo{
-		border: 2px solid #cc181e;
+		border: 1px solid #cc181e;
 	}
 	.inactiveVideo{
 		opacity:0.7;
@@ -322,7 +322,7 @@
 	<div id="autoPlayer" class="slot0"></div>
 	<img id="autoplayClick" class="slot0" src="https://s3-us-west-2.amazonaws.com/apollo-creative/342x193-Video-RPWS.png"/>
 
-	<img class="brandImg" src="https://s3-us-west-2.amazonaws.com/apollo-creative/quantcastBrand.png"/>
+	<img class="brandImg" onClick="window.open(clickTag, '_blank');" src="https://s3-us-west-2.amazonaws.com/apollo-creative/quantcastBrand.png"/>
 	<div id="text">
 		This video is for the greatest brand in the known universe.
 	</div>
