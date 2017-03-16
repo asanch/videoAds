@@ -16,22 +16,22 @@
 	var video1 = {
 	  	'videoID' : 'l4Y-B0A7Y-I',										// Video 1 perams 
 	  	'quality' : 'small',										// small, medium, large, hd720, hd1080, highres, default
-	  	'start' : 4,
-	  	'end' : 15,
+	  	'start' : 0,
+	  	'end' : 4,
 		'volume' : 100
 	}
 	
 	var video2 = {
 		'videoID' : '5FcfhH8gb5E',										// Video 2 perams
-		'quality' : 'default',
+		'quality' : 'hd1080',
 		'start' : 15,
-		'end' : 'null',
+		'end' : 25,
 		'volume' : 100
 	}
 	
 	var video3 = {
 	  'videoID' : 'bAyp8HxfQvs',										// Video 3 perams
-	  'quality' : 'default', 	 
+	  'quality' : 'hd1080', 	 
 	  'start' : 15,
 	  'end' : 'null',
 	  'volume' : 100
@@ -40,9 +40,8 @@
 // Set the auto play perameters 
 	var autoplayVideo = {
 	  //'theVideoToAutoPlay' : 1,										// which video to autoplay
-	  'startTime' : 0,												// where the video should play from 
-	  //'playDuration' : 15,											// how long the video should play for on auto play
-	  //'endTime' : startTime+playDuration, 							// Can change to just the end time if that is simpler. 
+	  'start' : 0,												// where the video should play from 
+	  'end' : 4, 							// Can change to just the end time if that is simpler. 
 	  'quality' : 'medium'											// small, medium, large, hd720, hd1080, highres, default
 	}
 
@@ -126,7 +125,7 @@
 	}
 
 	function onYouTubeAutoPlayerReady(event){
-		autoPlayer.mute();							// Autoplay player is ready for play, mute onload
+		autoPlayer.mute();							// Autoplay player is ready for play, mute onload, set preferences
 		if(autoplayVideo['quality'] != 'null'){
 			autoPlayer.setPlaybackQuality(autoplayVideo['quality']);
 		}else{
@@ -141,14 +140,22 @@
 		if(event.data == 0){						// Autoplay player has ended 
 			removeAutoPlay();
 		}
+		if(event.data == 1){						// Autoplay player has started
+			if(autoplayVideo['start'] != 'null' && autoplayVideo['end'] != 'null'){
+				setTimeout(function(){event.target.pauseVideo();}, (autoplayVideo['end']-autoplayVideo['start'])*1000);
+			}
+		}
 	}
-	
 
 	function onYouTubePlayersStateChange(event){
+		var settings = videoPreferences[event.target.a.id];
 		if(event.data == 0){						// A player has ended								
 		}
 		if(event.data == 1){						// A player has started
 			moveVideoAndPlay(event.target.a);
+			if(settings['start'] != 'null' && settings['end'] != 'null'){
+				setTimeout(function(){event.target.pauseVideo();}, (settings['end']-settings['start'])*1000);
+			}
 		}
 		if(event.data == 2){						// A player has been paused
 		}
@@ -158,9 +165,9 @@
 			}
 			moveVideoAndPlay(event.target.a);
 			setDefaultsOrPreferences(event.target);
-
 		}
 	}
+	
 	function setDefaultsOrPreferences(player){
 		var settings = videoPreferences[player.a.id];
 		if (settings['quality'] != 'null'){
@@ -254,7 +261,7 @@
 		font-size: 11px;
 		color:black;
 		text-align:center;
-		margin-top:205px;
+		margin-top:210px;
 	}
 	#player0{
 		z-index:3;
@@ -264,15 +271,15 @@
 		position:absolute;
 	}
 	.slot1{
-		margin:153px 0px 0px 133px;
+		margin:155px 0px 0px 135px;
 		position:absolute;
 	}
 	.slot2{
-		margin:153px 0px 0px 215px;
+		margin:155px 0px 0px 220px;
 		position:absolute;
 	}
 	.slot3{
-		margin:203px 0px 0px 175px;
+		margin:205px 0px 0px 175px;
 		position:absolute;
 	}
 	.player0{
