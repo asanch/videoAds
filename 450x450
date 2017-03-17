@@ -305,7 +305,7 @@
 	.bannerStripe{
 		position:absolute;
 		width:425px;
-		margin:335px 0px 0px 0px;
+		margin:340px 0px 0px 0px;
 		cursor: pointer;
 	}
 	.ctaButton{
@@ -327,7 +327,7 @@
 	.thumbnailsBg{
 		position:absolute;
 		z-index:0;
-		background-color:gray;
+		background-color:#202833;
 		height:70.3125px;
 		width:450px;
 		margin:253.125px 0px 0px 0px;
