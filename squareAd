@@ -1,0 +1,540 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>squareAd</title>
+<script type="text/javascript">
+	/* overview
+	This function handles loading of YouTube players using the Youtube Iframe API. Two sizes should be defined, one for a main view and one for a thumbnail view
+	*/
+	
+// Set all the veriables that define content. 
+	var showControls = 1; 												// 0 means no controls 1 means with controls 
+	var defaultVolume = 50;											// volume the videos start to play at. 
+	var defaultQuality = 'default';
+
+// set the perams for each video   
+	var video1 = {
+	  	'videoID' : 'XX5wTD9VkLc',										// Video 1 perams 
+	  	'quality' : 'small',										// small, medium, large, hd720, hd1080, highres, default
+	  	'start' : 0,
+	  	'end' : 15,
+		'volume' : 100
+	}
+	
+	var video2 = {
+		'videoID' : '5FcfhH8gb5E',										// Video 2 perams
+		'quality' : 'hd1080',
+		'start' : 15,
+		'end' : 25,
+		'volume' : 100
+	}
+	
+	var video3 = {
+	  'videoID' : 'bAyp8HxfQvs',										// Video 3 perams
+	  'quality' : 'hd1080', 	 
+	  'start' : 15,
+	  'end' : 25,
+	  'volume' : 100
+	}
+
+// Set the auto play perameters 
+	var autoplayVideo = {
+	  'start' : 0,												// where the video should play from 
+	  'end' : 10, 							// Can change to just the end time if that is simpler. 
+	  'quality' : 'medium'											// small, medium, large, hd720, hd1080, highres, default
+	}
+
+// Set the clickTag	  
+	var clickTag = "https://www.quantcast.com/";
+	
+// Make no modifications to any variables after this point!!!!! -------------------------------------------------------------
+	var mainPlayerSize;
+	var thumbnailPlayerSize;
+	var slots = {};
+	
+//Player vars
+	var players = {};
+	var autoPlayer;
+	var videoPreferences = {'player0': video1,'player1': video2,'player2': video3};
+	
+	function onYouTubeIframeAPIReady() {
+	autoPlayer = new YT.Player('autoPlayer', {									
+        height: mainPlayerSize['height'],
+        width: mainPlayerSize['width'],
+		videoId: video1['videoID'],
+		playerVars: {
+			'rel': 0,
+			'enablejsapi': 1,
+			'iv_load_policy': 3,
+			'autoplay': 1,
+			'controls': 0,
+			'showinfo': 0,
+			'cc_load_policy': 0
+		}
+	});
+	players['player0'] = new YT.Player('player0', {									
+        height: mainPlayerSize['height'],
+        width: mainPlayerSize['width'],
+		videoId: video1['videoID'],
+		playerVars: {
+			'rel': 0,
+			'enablejsapi': 1,
+			'iv_load_policy': 3,
+			'autoplay': 0,
+			'controls': showControls,
+			'showinfo': 0,
+			'cc_load_policy': 0
+		}
+	});
+	players['player1'] = new YT.Player('player1', {
+		height: thumbnailPlayerSize['height'],
+        width: thumbnailPlayerSize['width'],
+		videoId: video2['videoID'],
+		playerVars: {
+			'rel': 0,
+			'enablejsapi': 1,
+			'iv_load_policy': 3,
+			'autoplay': 0,
+			'controls': showControls,
+			'showinfo': 0,
+			'cc_load_policy': 0
+		}	
+	});
+	players['player2'] = new YT.Player('player2', {
+		height: thumbnailPlayerSize['height'],
+        width: thumbnailPlayerSize['width'],
+		videoId: video3['videoID'],
+		playerVars: {
+			'rel': 0,
+			'enablejsapi': 1,
+			'iv_load_policy': 3,
+			'autoplay': 0,
+			'controls': showControls,
+			'showinfo': 0,
+			'cc_load_policy': 0
+		}
+	});
+  		autoPlayer.addEventListener("onReady", "onYouTubeAutoPlayerReady");
+		autoPlayer.addEventListener("onStateChange", "onYouTubeAutoPlayerStateChange");
+		players['player0'].addEventListener("onStateChange", "onYouTubePlayersStateChange");
+  		players['player1'].addEventListener("onStateChange", "onYouTubePlayersStateChange");
+		players['player2'].addEventListener("onStateChange", "onYouTubePlayersStateChange");
+	}
+
+	function onYouTubeAutoPlayerReady(event){
+		autoPlayer.mute();							// Autoplay player is ready for play, mute onload, set preferences
+		if(autoplayVideo['quality'] != 'null'){
+			autoPlayer.setPlaybackQuality(autoplayVideo['quality']);
+		}else{
+			autoPlayer.setPlaybackQuality(defaultQuality);
+		}
+		if(autoplayVideo['start'] != 'null' || autoplayVideo['start'] != 0){
+			autoPlayer.seekTo(autoplayVideo['start']);
+		}
+	}
+	
+	function onYouTubeAutoPlayerStateChange(event){ 
+		if(event.data == 0){						// Autoplay player has ended 
+			removeAutoPlay();
+		}
+		if(event.data == 1){						// Autoplay player has started
+			if(autoplayVideo['start'] != 'null' && autoplayVideo['end'] != 'null'){
+				setTimeout(function(){event.target.pauseVideo();}, (autoplayVideo['end']-autoplayVideo['start'])*1000);
+			}
+		}
+	}
+
+	function onYouTubePlayersStateChange(event){
+		var settings = videoPreferences[event.target.a.id];
+		if(event.data == 0){						// A player has ended								
+		}
+		if(event.data == 1){						// A player has started
+			moveVideoAndPlay(event.target.a);
+			if(settings['start'] != 'null' && settings['end'] != 'null'){
+				setTimeout(function(){event.target.pauseVideo();}, (settings['end']-settings['start'])*1000);
+			}
+		}
+		if(event.data == 2){						// A player has been paused
+		}
+		if(event.data == 3){						// A player is buffering
+			if(autoPlayer.getIframe() != null){
+				removeAutoPlay();
+			}
+			moveVideoAndPlay(event.target.a);
+			setDefaultsOrPreferences(event.target);
+		}
+	}
+	
+	function setDefaultsOrPreferences(player){
+		var settings = videoPreferences[player.a.id];
+		if (settings['quality'] != 'null'){
+			player.setPlaybackQuality(settings['quality']);
+		}else{
+			player.setPlaybackQuality(defaultQuality);
+		}
+		if (settings['start'] != 'null' || settings['start'] != 0){
+			player.seekTo(settings['start']);
+		}
+		if (settings['end'] != 'null'){
+		}
+		if (settings['volume'] != 'null'){
+			player.setVolume(settings['volume']);
+		}else{
+			player.setVolume(defaultVolume);
+		}
+	}
+	
+	function moveVideoAndPlay(player){
+		var elmts = document.getElementsByClassName('slot0');
+		for(i=0;i<elmts.length; i++){
+			if(elmts[i].width == mainPlayerSize['width']){
+				var nowPlaying = elmts[i];
+				}
+		}
+		if(player != nowPlaying){
+			moveBack(nowPlaying);
+			moveToPlay(player);
+			selectVideoForView(player);
+		}
+	}
+	
+	function moveBack(player){
+		var slot;
+		if(player.id == 'player0'){slot = 'player3';}
+		else{slot= player.id;}
+		players[player.id].pauseVideo();
+		player.height = String(thumbnailPlayerSize['height'])+'px';
+		player.width = String(thumbnailPlayerSize['width'])+'px';		
+		player.style['top'] = String(slots[slot].top)+'px';
+		player.style['right'] = String(slots[slot].right)+'px';
+		player.style['bottom'] = String(slots[slot].bottom)+'px';
+		player.style['left'] = String(slots[slot].left)+'px';
+		player.className = 'thumbnailVideo';
+	}
+	
+	function moveToPlay(player){
+		player.height = String(mainPlayerSize['height'])+'px';
+		player.width = String(mainPlayerSize['width'])+'px';
+		player.style['top'] = String(slots['player0'].top)+'px';
+		player.style['right'] = String(slots['player0'].right)+'px';
+		player.style['bottom'] = String(slots['player0'].bottom)+'px';
+		player.style['left'] = String(slots['player0'].left)+'px';
+		player.className = 'player0 slot0';
+	}
+	
+	function removeAutoPlay(){
+		document.getElementById("player0").className += " player0";
+		document.getElementById("autoplayClick").style.display = "none";
+		autoPlayer.destroy();
+	}
+
+	function selectVideoForView(player){
+		var vidNodes = document.getElementsByClassName('thumbnail');
+		for(var i=0; i< vidNodes.length; i++){
+			if (vidNodes[i] == document.getElementById(positions[player.id])){
+				vidNodes[i].classList.remove("inactiveVideo");
+				vidNodes[i].classList.add("activeVideo");
+			}else{
+				vidNodes[i].classList.remove("activeVideo");
+				vidNodes[i].classList.add("inactiveVideo");
+			}
+		}
+	}
+	
+	var optimizedResize = (function() {
+    var callbacks = [],
+        running = false;
+    // fired on resize event
+    function resize() {
+        if (!running) {
+            running = true;
+            if (window.requestAnimationFrame) {
+                window.requestAnimationFrame(runCallbacks);
+            } else {
+                setTimeout(runCallbacks, 66);
+            }
+        }
+    }
+    // run the actual callbacks
+    function runCallbacks() {
+        callbacks.forEach(function(callback) {
+            callback();
+        });
+        running = false;
+    }
+    // adds callback to loop
+    function addCallback(callback) {
+        if (callback) {
+            callbacks.push(callback);
+        }
+    }
+    return {
+        // public method to add additional callback
+        add: function(callback) {
+            if (!callbacks.length) { // if no callback added, 
+                window.addEventListener('resize', resize);
+            }
+            addCallback(callback);
+        }
+    }
+	}());
+	//window.addEventListener("resize", function(){alert('resize!')}, true);
+	
+	// start process
+	//optimizedResize.add(function(){reloadLayouts();});
+	
+	function loadLayout(){
+		var height = window.innerHeight;
+		var width = window.innerWidth;
+		manifestAd(width,height);
+		loadYouTubePlayers();
+	}
+	
+	function loadYouTubePlayers(){
+		// Load the Youtube Iframe API
+		var tag = document.createElement('script');
+		tag.src = "https://www.youtube.com/iframe_api";
+		var firstScriptTag = document.getElementsByTagName('script')[0];
+		firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+	}
+	
+	var manifest = {'300x300': [{'elmtType':'div','id':'player0','class':'slot0 thumbnailVideo'},
+							   {'elmtType':'div','id':'autoPlayer','class':'slot0 autoPlayer'},
+							  {'elmtType':'div','id':'text','class':'text','innerHTML':'Thousands of brands rely on Quantcast. See why?'},
+							  {'elmtType':'div','class':'thumbnailsBg'},
+							  {'elmtType':'div','id':'player1','class':'slot1 thumbnailVideo'},
+							  {'elmtType':'div','id':'player2','class':'slot2 thumbnailVideo'},
+							  {'elmtType':'img','id':'autoplayClick','class':'slot0 autoplayClick','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/342x193-Video-RPWS.png"},
+							  {'elmtType':'img','class':'brandImg','onClick':"window.open(clickTag, '_blank');",'src':"https://s3-us-west-2.amazonaws.com/apollo-creative/quantcastBrand.png"},
+							  {'elmtType':'img','id':'slot1','class':'slot1 thumbnail inactiveVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/whoweare.png"},
+							  {'elmtType':'img','id':'slot2','class':'slot2 thumbnail inactiveVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/whyquantcast.png"},
+							  {'elmtType':'img','id':'slot3','class':'slot3 thumbnail activeVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/measuretn.png"}],
+				   '400x400': [{'elmtType':'div','id':'player0','class':'slot0 thumbnailVideo'},
+							   {'elmtType':'div','id':'autoPlayer','class':'slot0 autoPlayer'},
+							  {'elmtType':'div','id':'text','class':'text','innerHTML':'Your audience, revealed.'},
+							  {'elmtType':'div','class':'thumbnailsBg'},
+							  {'elmtType':'div','id':'player1','class':'slot1 thumbnailVideo'},
+							  {'elmtType':'div','id':'player2','class':'slot2 thumbnailVideo'},
+							  {'elmtType':'img','class':'ctaItem','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/getquantifiedbutton.png"},
+							  {'elmtType':'img','class':'bannerStripe','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/quantcastMeasure.png"},
+							  {'elmtType':'img','id':'autoplayClick','class':'slot0 autoplayClick','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/342x193-Video-RPWS.png"},
+							  {'elmtType':'img','class':'brandImg','onClick':"window.open(clickTag, '_blank');",'src':"https://s3-us-west-2.amazonaws.com/apollo-creative/quantcast_logo_detail.png"},
+							  {'elmtType':'img','id':'slot1','class':'slot1 thumbnail inactiveVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/whoweare.png"},
+							  {'elmtType':'img','id':'slot2','class':'slot2 thumbnail inactiveVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/whyquantcast.png"},
+							  {'elmtType':'img','id':'slot3','class':'slot3 thumbnail activeVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/measuretn.png"}],
+				   '500x500': [{'elmtType':'div','id':'player0','class':'slot0 thumbnailVideo'},
+							   {'elmtType':'div','id':'autoPlayer','class':'slot0 autoPlayer'},
+							  {'elmtType':'div','id':'text','class':'text','innerHTML':'Your audience, revealed.'},
+							  {'elmtType':'div','class':'thumbnailsBg'},
+							  {'elmtType':'div','id':'player1','class':'slot1 thumbnailVideo'},
+							  {'elmtType':'div','id':'player2','class':'slot2 thumbnailVideo'},
+							  {'elmtType':'img','class':'ctaItem','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/getquantifiedbutton.png"},
+							  {'elmtType':'img','class':'bannerStripe','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/quantcastMeasure.png"},
+							  {'elmtType':'img','id':'autoplayClick','class':'slot0 autoplayClick','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/342x193-Video-RPWS.png"},
+							  {'elmtType':'img','class':'brandImg','onClick':"window.open(clickTag, '_blank');",'src':"https://s3-us-west-2.amazonaws.com/apollo-creative/quantcast_logo_detail.png"},
+							  {'elmtType':'img','id':'slot1','class':'slot1 thumbnail inactiveVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/whoweare.png"},
+							  {'elmtType':'img','id':'slot2','class':'slot2 thumbnail inactiveVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/whyquantcast.png"},
+							  {'elmtType':'img','id':'slot3','class':'slot3 thumbnail activeVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/measuretn.png"}],
+					
+					
+				   '600x600': [
+					   		{'elmtType':'div','id':'player0','class':'slot0 thumbnailVideo','lowerWidth': '475','lowerHeight': '267.1875', upperWidth:'475', upperHeight:'267.1875','lowerMarginTop':0, 'lowerMarginRight':0,'lowerMarginBottom':0,'lowerMarginLeft':0,'upperMarginTop':0, 'upperMarginRight':0,'upperMarginBottom':0,'upperMarginLeft':0},
+							   
+							   {'elmtType':'div','id':'autoPlayer','class':'slot0','lowerWidth': '475','lowerHeight': '267.1875', upperWidth:'475', upperHeight:'267.1875','lowerMarginTop':0, 'lowerMarginRight':0,'lowerMarginBottom':0,'lowerMarginLeft':0,'upperMarginTop':0, 'upperMarginRight':0,'upperMarginBottom':0,'upperMarginLeft':0},
+							   
+							  {'elmtType':'div','class':'thumbnailsBg','lowerWidth': '125','lowerHeight': '267.1875', upperWidth:'125', upperHeight:'267.1875','lowerMarginTop':0, 'lowerMarginRight':0,'lowerMarginBottom':0,'lowerMarginLeft':475,'upperMarginTop':0, 'upperMarginRight':0,'upperMarginBottom':0,'upperMarginLeft':475},
+							   
+							  {'elmtType':'div','id':'player1','class':'thumbnailVideo','lowerWidth': '125','lowerHeight': '70.3125', upperWidth:'125', upperHeight:'70.3125','lowerMarginTop':0, 'lowerMarginRight':0,'lowerMarginBottom':0,'lowerMarginLeft':475,'upperMarginTop':0, 'upperMarginRight':0,'upperMarginBottom':0,'upperMarginLeft':475},
+							   
+							  {'elmtType':'div','id':'player2','class':'thumbnailVideo','lowerWidth': '125','lowerHeight': '70.3125', upperWidth:'125', upperHeight:'70.3125','lowerMarginTop':192.875, 'lowerMarginRight':0,'lowerMarginBottom':0,'lowerMarginLeft':475,'upperMarginTop':192.875, 'upperMarginRight':0,'upperMarginBottom':0,'upperMarginLeft':475},
+							   
+							  {'elmtType':'div','id':'player3','class':'thumbnailVideo','lowerWidth': '125','lowerHeight': '70.3125', upperWidth:'125', upperHeight:'70.3125','lowerMarginTop':98.4375, 'lowerMarginRight':0,'lowerMarginBottom':0,'lowerMarginLeft':475,'upperMarginTop':98.4375, 'upperMarginRight':0,'upperMarginBottom':0,'upperMarginLeft':475},
+							   
+							  {'elmtType':'img','class':'ctaButton','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/getquantifiedbutton.png",'lowerWidth': '150','lowerHeight': '35.88', upperWidth:'150', upperHeight:'35.88','lowerMarginTop':560, 'lowerMarginRight':0,'lowerMarginBottom':0,'lowerMarginLeft':225,'upperMarginTop':560, 'upperMarginRight':0,'upperMarginBottom':0,'upperMarginLeft':225},
+							   
+							  {'elmtType':'img','class':'ctaItem','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/howitworks.png",'lowerWidth': '600','lowerHeight': '224.92', upperWidth:'600', upperHeight:'253.125','lowerMarginTop':267.1875, 'lowerMarginRight':0,'lowerMarginBottom':0,'lowerMarginLeft':0,'upperMarginTop':267.1875, 'upperMarginRight':0,'upperMarginBottom':0,'upperMarginLeft':0},
+							   
+							  {'elmtType':'img','class':'bannerStripe','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/quantcastMeasure.png",'lowerWidth': '600','lowerHeight': '57.75', upperWidth:'600', upperHeight:'57.75','lowerMarginTop':500, 'lowerMarginRight':0,'lowerMarginBottom':0,'lowerMarginLeft':0,'upperMarginTop':500, 'upperMarginRight':0,'upperMarginBottom':0,'upperMarginLeft':0},
+							   
+							  {'elmtType':'img','id':'autoplayClick','class':'slot0 autoplayClick','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/342x193-Video-RPWS.png",'lowerWidth': '475','lowerHeight': '267.1875', upperWidth:'475', upperHeight:'267.1875','lowerMarginTop':0, 'lowerMarginRight':0,'lowerMarginBottom':0,'lowerMarginLeft':0,'upperMarginTop':0, 'upperMarginRight':0,'upperMarginBottom':0,'upperMarginLeft':0},
+							   
+							  {'elmtType':'img','class':'brandImg','onClick':"window.open(clickTag, '_blank');",'src':"https://s3-us-west-2.amazonaws.com/apollo-creative/quantcastBrand.png",'lowerWidth': '75','lowerHeight': '30', upperWidth:'75', upperHeight:'30','lowerMarginTop':270, 'lowerMarginRight':0,'lowerMarginBottom':0,'lowerMarginLeft':15,'upperMarginTop':270, 'upperMarginRight':0,'upperMarginBottom':0,'upperMarginLeft':15},
+							   
+							  {'elmtType':'img','class':'slot1 thumbnail inactiveVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/whoweare.png",'lowerWidth': '125','lowerHeight': '70.3125', upperWidth:'125', upperHeight:'70.3125','lowerMarginTop':0, 'lowerMarginRight':0,'lowerMarginBottom':0,'lowerMarginLeft':475,'upperMarginTop':0, 'upperMarginRight':0,'upperMarginBottom':0,'upperMarginLeft':475},
+							   
+							  {'elmtType':'img','class':'slot2 thumbnail inactiveVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/whyquantcast.png",'lowerWidth': '125','lowerHeight': '70.3125', upperWidth:'125', upperHeight:'70.3125','lowerMarginTop':199.875, 'lowerMarginRight':0,'lowerMarginBottom':0,'lowerMarginLeft':475,'upperMarginTop':192.875, 'upperMarginRight':0,'upperMarginBottom':0,'upperMarginLeft':475},
+							   
+							  {'elmtType':'img','class':'slot3 thumbnail activeVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/measuretn.png",'lowerWidth': '125','lowerHeight': '70.3125', upperWidth:'125', upperHeight:'70.3125','lowerMarginTop':98.4375, 'lowerMarginRight':0,'lowerMarginBottom':0,'lowerMarginLeft':475,'upperMarginTop':98.4375, 'upperMarginRight':0,'upperMarginBottom':0,'upperMarginLeft':475}],
+				   '700x700': [],
+				   '800x800': [],
+				   '900x900': []
+				   }		
+	
+	function manifestAd(width, height){
+		var layoutIndex = String(width-(width%100))+"x"+String(height-(height%100))
+		var body = document.body;
+		var container = document.createElement('div');
+		container.className = 'container';
+		container.style.setProperty('--element-height',height-2);
+		container.style.setProperty('--element-width',width-2);
+		body.appendChild(container);
+		var assets = manifest[layoutIndex];
+		for(var i=0; i<assets.length; i++){
+			var element;
+			var elmHeight = (parseInt(assets[i].upperHeight)+parseInt(assets[i].lowerHeight))/2;
+			var elmWidth = (parseInt(assets[i].upperWidth)+parseInt(assets[i].lowerWidth))/2;
+			var elmMargin = {'top':(parseInt(assets[i].lowerMarginTop)+parseInt(assets[i].upperMarginTop))/2,
+							'right':(parseInt(assets[i].lowerMarginRight)+parseInt(assets[i].upperMarginRight))/2,
+							'bottom':(parseInt(assets[i].lowerMarginBottom)+parseInt(assets[i].upperMarginBottom))/2,
+							'left':(parseInt(assets[i].lowerMarginLeft)+parseInt(assets[i].upperMarginLeft))/2}
+			if(assets[i].elmtType){
+					element = document.createElement(assets[i].elmtType);
+			}
+			if(assets[i].id){
+				element.id = assets[i].id;
+				if(assets[i].id == 'player0'){
+					mainPlayerSize = {'width': elmWidth,'height': elmHeight};
+					slots['player0'] = elmMargin;
+				}
+				if(assets[i].id == 'player1'){
+					thumbnailPlayerSize = {'width': elmWidth,'height': elmHeight};
+					slots['player1'] = elmMargin;
+				}
+				if(assets[i].id == 'player2'){
+					thumbnailPlayerSize = {'width': elmWidth,'height': elmHeight};
+					slots['player2'] = elmMargin;
+				}
+				if(assets[i].id == 'player3'){
+					thumbnailPlayerSize = {'width': elmWidth,'height': elmHeight};
+					slots['player3'] = elmMargin;
+				}
+			}
+			if(assets[i].class){
+					element.className = assets[i].class;
+			}
+			if(assets[i].innerHTML){
+					element.innerHTML = assets[i].innerHTML;
+			}
+			if(assets[i].src){
+					element.src = assets[i].src;
+			}
+			element.height = String(elmHeight)+'px';
+			element.width = String(elmWidth)+'px';
+			element.style['top'] = String(elmMargin['top'])+'px';
+			element.style['right'] = String(elmMargin['right'])+'px';
+			element.style['bottom'] = String(elmMargin['bottom'])+'px';
+			element.style['left'] = String(elmMargin['left'])+'px';
+			container.appendChild(element);
+		}
+	}
+	
+	function initializePlayers(){
+		var height = window.innerHeight;
+		var width = window.innerWidth;
+
+		// set size variables to define slots, use the slot sizes to initialize the thumbnail players and main player
+		if(width < 450 && height < 450){
+			mainPlayerSize = {'width': '300','height': '150'};
+			thumbnailPlayerSize = {'width': '82','height': '50'};
+		}
+		if((width >= 450 || height >= 450) && (width <= 600 || height <= 600)){
+			mainPlayerSize = {'width': '450','height': '253.125'};
+			thumbnailPlayerSize = {'width': '125','height': '70.3125'};
+		}
+		manifestAd(width,height);
+	}
+	
+	window.onload = loadLayout;
+
+	</script>
+<style>
+	body{
+		font-family: proxima-nova,"Helvetica Neue",Arial,sans-serif;
+		margin:0;
+	}
+	.container{
+		position:relative;
+		background-color:#FAFAFA;
+		overflow: auto;
+		border: 1px solid #000000;
+		height: calc(var(--element-height) * 1px);
+		width: calc(var(--element-width) * 1px);
+	}
+	.autoplayClick{
+		position:absolute;
+		z-index:2;
+	}
+	.brandImg{
+		position:absolute;
+		z-index:2;
+		cursor: pointer;
+		height: calc(var(--element-height) * 1px);
+		width: calc(var(--element-width) * 1px);
+		margin: calc(var(--element-margin-top) * 1px) calc(var(--element-margin-right) * 1px) calc(var(--element-margin-bottom) * 1px) calc(var(--element-margin-left) * 1px);
+	}
+	.bannerStripe{
+		position:absolute;
+		cursor: pointer;
+		height: calc(var(--element-height) * 1px);
+		width: calc(var(--element-width) * 1px);
+		margin: calc(var(--element-margin-top) * 1px) calc(var(--element-margin-right) * 1px) calc(var(--element-margin-bottom) * 1px) calc(var(--element-margin-left) * 1px);
+	}
+	.ctaItem{
+		position:absolute;
+		z-index;1;
+		cursor:pointer;
+		height: calc(var(--element-height) * 1px);
+		width: calc(var(--element-width) * 1px);
+		margin: calc(var(--element-margin-top) * 1px) calc(var(--element-margin-right) * 1px) calc(var(--element-margin-bottom) * 1px) calc(var(--element-margin-left) * 1px);
+	}
+	.ctaButton{
+		position:absolute;
+		cursor:pointer;
+		height: calc(var(--element-height) * 1px);
+		width: calc(var(--element-width) * 1px);
+		margin: calc(var(--element-margin-top) * 1px) calc(var(--element-margin-right) * 1px) calc(var(--element-margin-bottom) * 1px) calc(var(--element-margin-left) * 1px);
+	}
+	.thumbnail{
+		position:absolute;
+		z-index:1;
+		height: calc(var(--element-height) * 1px);
+	}
+	.thumbnailsBg{
+		position:absolute;
+		z-index:0;
+		background-color:#202833;
+		height: calc(var(--element-height) * 1px);
+		width: calc(var(--element-width) * 1px);
+		margin: calc(var(--element-margin-top) * 1px) calc(var(--element-margin-right) * 1px) calc(var(--element-margin-bottom) * 1px) calc(var(--element-margin-left) * 1px);
+	}
+	/*****************************************************************************************************************************/
+	.autoPlayer{
+		position:absolute;
+		z-index:1;
+	}
+	.player0{
+		position:absolute;
+		opacity:1 !important;
+		z-index:3;
+	}
+	.thumbnailVideo{
+		position:absolute;
+		opacity:0;
+		z-index:2;
+	}
+	.activeVideo{
+		-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+		-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+		box-sizing: border-box;         /* Opera/IE 8+ */
+		border: 2px solid #cc181e;
+	}
+	.inactiveVideo{
+		opacity:0.7;
+	}
+	</style>
+</head>
+
+<body>
+</body>
+</html>
