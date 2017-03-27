@@ -338,30 +338,26 @@
 		var body = document.body;				// create container element
 		var container = document.createElement('div');
 		container.className = 'container';
-		container.style.height = String(actualHeight-2)+'px';
-		container.style.width = String(actualWidth-2)+'px';
+		container.style.height = String(actualHeight)+'px';
+		container.style.width = String(actualWidth)+'px';
 		body.appendChild(container);
-		var celing;       						//select the coverage area the Actual Width and Height are located
-		for(var i=0;i<manifest.length;i++){
+   						
+		for(var i=0;i<manifest.length;i++){		//select the coverage area the Actual Width and Height are located
 			var floor = Object.keys(manifest[i])[0].split("x");
-			if(floor[0] <= actualWidth || floor[1] <= actualHeight){
-				/*layoutIndex = {'width':floor[0],'height':floor[1]};
-				if((actualWidth-layoutIndex['width']) > (actualWidth-floor[0]) || (actualHeight-layoutIndex['height']) > (actualHeight-floor[1])){*/
-				if(manifest.length > (i+1)){
-					celing = Object.keys(manifest[i+1])[0].split("x");
-				}else{
-					celing = ["1000","1000"];
-				}
+			if(floor[0] <= actualWidth && floor[1] <= actualHeight){
 				var assets = manifest[i][String(floor[0])+"x"+String(floor[1])];
 			}
 		}
-		var delta = [celing[0]-actualWidth,celing[1]-actualHeight];
+		if(assets.length == 0){
+			alert("error no assets loaded");
+		}
+		var delta = [actualWidth/floor[0],actualHeight/floor[1]];
 		for(var i=0; i<assets.length; i++){
 			var element;
-			var elmWidth = parseInt(assets[i].width)+(delta[0]/2);
-			var elmHeight = parseInt(assets[i].height)+(delta[1]/2);
-			var elmMargin = {'top':parseInt(assets[i].marginTop)+(delta[1]/2),
-							'left':parseInt(assets[i].marginLeft)+(delta[0]/2)
+			var elmWidth = delta[0]*parseInt(assets[i].width)
+			var elmHeight = delta[1]*parseInt(assets[i].height);
+			var elmMargin = {'left':delta[0]*parseInt(assets[i].marginLeft),
+							 'top':delta[1]*parseInt(assets[i].marginTop)
 							};
 			if(assets[i].elmtType){
 					element = document.createElement(assets[i].elmtType);
