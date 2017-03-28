@@ -57,6 +57,7 @@
 	var players = {};
 	var autoPlayer;
 	var videoPreferences = {'player0': video1,'player1': video2,'player2': video3};
+	var notPlaying = [-1,0,5];
 	
 	function onYouTubeIframeAPIReady() {
 	autoPlayer = new YT.Player('autoPlayer', {									
@@ -150,7 +151,7 @@
 		if(event.data == 0){						// A player has ended								
 		}
 		if(event.data == 1){						// A player has started
-			moveVideoAndPlay(event.target.a);
+			moveVideoAndPlay(event.target);
 			if(settings['start'] != 'null' && settings['end'] != 'null'){
 				setTimeout(function(){event.target.pauseVideo();}, (settings['end']-settings['start'])*1000);
 			}
@@ -161,7 +162,7 @@
 			if(autoPlayer.getIframe() != null){
 				removeAutoPlay();
 			}
-			moveVideoAndPlay(event.target.a);
+			moveVideoAndPlay(event.target);
 			setDefaultsOrPreferences(event.target);
 		}
 	}
@@ -189,14 +190,17 @@
 		var elmts = document.getElementsByClassName('slot0'); //decide what is nowPlaying
 		for(i=0;i<elmts.length; i++){
 			if(elmts[i].width == mainPlayerSize['width'] && elmts[i].id != 'autoPlayer' && elmts[i].id != 'autoplayerClick'){
-				var nowPlaying = elmts[i];
-				console.log(nowPlaying.id);
+				var nowPlaying = players[elmts[i].id];
 				}
 		}
-		if(player != nowPlaying){
-			moveBack(nowPlaying);
-			moveToPlay(player);
-			selectVideoForView(player);
+		if(player.a != nowPlaying.a){
+			moveBack(nowPlaying.a);
+			moveToPlay(player.a);
+			selectVideoForView(player.a);
+			console.log(nowPlaying.getPlayerState());
+			if(notPlaying.indexOf(nowPlaying.getPlayerState()) != -1){  //if found then not playing
+				nowPlaying.a.className = 'thumbnailVideo';
+			}
 		}
 	}
 	
@@ -214,7 +218,7 @@
 		player.width = thumbnailPlayerSize['width'];
 		player.style.top = String(slots[slot].top)+'px';
 		player.style.left = String(slots[slot].left)+'px';
-		player.className = 'thumbnailVideo';
+		player.className = 'thumbnailVideoPaused';
 	}
 	
 	function moveToPlay(player){
@@ -480,6 +484,10 @@
 	.thumbnailVideo{
 		position:absolute;
 		opacity:0;
+		z-index:2;
+	}
+	.thumbnailVideoPaused{
+		position:absolute;
 		z-index:2;
 	}
 	.activeVideo{
