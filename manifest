@@ -1,0 +1,41 @@
+var manifest = [{'300x600': [ 
+						
+								// video elements
+						
+						{'elmtType':'div','id':'player0','class':'slot0 hiddenPlayer0', width:'300', height:'168.75','marginTop':0, 'marginLeft':0},
+							   
+						{'elmtType':'div','id':'autoPlayer','class':'slot0','width': '300','height': '168.75','marginTop':0, 'marginLeft':0},							 
+							   
+						{'elmtType':'div','id':'player1','class':'thumbnailVideo','width':'85','height':'47.628','marginTop':180.7255, 'marginLeft':11.25},
+							   	
+						{'elmtType':'div','id':'player2','class':'thumbnailVideo ', 'width':'85', 'height':'47.628','marginTop':180.7255, 'marginLeft':203.75},
+							   
+						{'elmtType':'div','id':'player3','class':'thumbnailVideo player-hidden','width': '85','height': '47.628','marginTop':180.7255, 'marginLeft':107.5},
+							
+						{'elmtType':'div','class':'thumbnailsBg','style':'background-color:#000000;','width':'300','height':'71.579','marginTop':168.75, 'marginLeft':0},
+						
+						{'elmtType':'img','class':'slot1 thumbnail inactiveVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/whoweare.png",'width':'85','height': '47.628', 'marginTop':180.7255, 'marginLeft':11.25},
+							   
+						{'elmtType':'img','class':'slot2 thumbnail inactiveVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/whyquantcast.png",'width':'85', 'height':'47.628','marginTop':180.7255, 'marginLeft':203.75},
+							   
+						{'elmtType':'img','class':'slot3 thumbnail activeVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/measuretn.png", 'width':'85', 'height':'47.628','marginTop':180.7255, 'marginLeft':107.5},
+						
+						{'elmtType':'img','id':'autoplayClick','class':'slot0 autoplayClick','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/342x193-Video-RPWS.png",'width': '300','height': '168.75', 'marginTop':0, 'marginLeft':0},
+						
+								//supporting elements
+							   
+						{'elmtType':'img','id':'salesEvent','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/Sales.svg", 'width':'87.43', 'height':'94.099','marginTop':245.743, 'marginLeft':13.256},
+						
+						{'elmtType':'div','id':'2017PriusText','class':'ctaItem ctaLevel2','style':'font:bold 14px Montserrat;color:#ffffff;','innerHTML':"2017 PRIUS", 'width':'82.528', 'height':'16.247','marginTop': 253.706, 'marginLeft': 204.255},
+						
+						{'elmtType':'div','id':'greatDealsText','class':'ctaItem ctaLevel2','style':'font:lighter 6px Montserrat;color:#ffffff;','innerHTML':"<b>Great Deals</b> Available at your local Toyota dealer", 'width':'71.501', 'height':'13.845','marginTop': 267.838, 'marginLeft':204.255},
+						
+						{'elmtType':'img','id':'car','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/bluetoyota.svg", 'width':'309.897', 'height':'181.626','marginTop': 286.651, 'marginLeft': 47.659},
+						
+						{'elmtType':'img','id':'logo','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/toyota-lgp-logo.png", 'width':'199.578', 'height':'46.568','marginTop': 476.622, 'marginLeft': 50.211},
+						
+						{'elmtType':'img','id':'cta','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/Toyota_CTA.svg", 'width':'216.023', 'height':'47.618','marginTop': 532.725, 'marginLeft': 42.049},
+						
+						{'elmtType':'img','id':'greyBox','class':'ctaItem ctaLevel1','style':'background-color:#edf0f5;','width':'300', 'height':'145','marginTop': 455, 'marginLeft': 0}
+							 ]},{'300x750': []},{'300x900': []}
+			   	];
