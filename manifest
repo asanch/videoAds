@@ -24,7 +24,7 @@ var manifest = [{'300x600': [
 						
 								//supporting elements
 							   
-						{'elmtType':'img','id':'salesEvent','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/Sales.svg", 'width':'87.43', 'height':'94.099','marginTop':245.743, 'marginLeft':13.256},
+						{'elmtType':'img','id':'salesEvent','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/Sales.svg", 'width':'87.43', 'height':'94.099','marginTop':245.743, 'marginLeft':10.256},
 						
 						{'elmtType':'div','id':'2017PriusText','class':'ctaItem ctaLevel2','style':'font:bold 14px Montserrat;color:#ffffff;','innerHTML':"2017 PRIUS", 'width':'82.528', 'height':'16.247','marginTop': 253.706, 'marginLeft': 204.255},
 						
@@ -37,5 +37,130 @@ var manifest = [{'300x600': [
 						{'elmtType':'img','id':'cta','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/Toyota_CTA.svg", 'width':'216.023', 'height':'47.618','marginTop': 532.725, 'marginLeft': 42.049},
 						
 						{'elmtType':'img','id':'greyBox','class':'ctaItem ctaLevel1','style':'background-color:#edf0f5;','width':'300', 'height':'145','marginTop': 455, 'marginLeft': 0}
-							 ]},{'300x750': []},{'300x900': []}
+							 ]},
+				
+				{'300x750': [ 	
+								// video elements
+						
+						{'elmtType':'div','id':'player0','class':'slot0 hiddenPlayer0', width:'300', height:'168.75','marginTop':0, 'marginLeft':0},
+							   
+						{'elmtType':'div','id':'autoPlayer','class':'slot0','width': '300','height': '168.75','marginTop':0, 'marginLeft':0},							 
+							   
+						{'elmtType':'div','id':'player1','class':'thumbnailVideo','width':'85','height':'47.628','marginTop':180.7255, 'marginLeft':11.25},
+							   	
+						{'elmtType':'div','id':'player2','class':'thumbnailVideo ', 'width':'85', 'height':'47.628','marginTop':180.7255, 'marginLeft':203.75},
+							   
+						{'elmtType':'div','id':'player3','class':'thumbnailVideo player-hidden','width': '85','height': '47.628','marginTop':180.7255, 'marginLeft':107.5},
+							
+						{'elmtType':'div','class':'thumbnailsBg','style':'background-color:#000000;','width':'300','height':'71.579','marginTop':168.75, 'marginLeft':0},
+						
+						{'elmtType':'img','class':'slot1 thumbnail inactiveVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/whoweare.png",'width':'85','height': '47.628', 'marginTop':180.7255, 'marginLeft':11.25},
+							   
+						{'elmtType':'img','class':'slot2 thumbnail inactiveVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/whyquantcast.png",'width':'85', 'height':'47.628','marginTop':180.7255, 'marginLeft':203.75},
+							   
+						{'elmtType':'img','class':'slot3 thumbnail activeVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/measuretn.png", 'width':'85', 'height':'47.628','marginTop':180.7255, 'marginLeft':107.5},
+						
+						{'elmtType':'img','id':'autoplayClick','class':'slot0 autoplayClick','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/342x193-Video-RPWS.png",'width': '300','height': '168.75', 'marginTop':0, 'marginLeft':0},
+						
+								//supporting elements
+							   
+						{'elmtType':'img','id':'salesEvent','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/Sales.svg", 'width':'133.596', 'height':'143.787','marginTop':250.743, 'marginLeft':10.256},
+						
+						{'elmtType':'div','id':'2017PriusText','class':'ctaItem ctaLevel2','style':'font:700 17px Montserrat;color:#ffffff;','innerHTML':"2017 PRIUS", 'width':'106.108', 'height':'20.889','marginTop': 580.998, 'marginLeft': 200.113},
+						
+						{'elmtType':'div','id':'greatDealsText','class':'ctaItem ctaLevel2','style':'font:400 14px Montserrat;color:#ffffff;text-align:center;','innerHTML':"<b>Great Deals</b> Available at your local Toyota dealer", 'width':'85.518', 'height':'57.505','marginTop': 290, 'marginLeft':190.255},
+						
+						{'elmtType':'img','id':'car','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/bluetoyota.svg", 'width':'367.591', 'height':'215.439','marginTop': 375, 'marginLeft': 0},
+						
+						{'elmtType':'img','id':'logo','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/toyota-lgp-logo.png", 'width':'199.578', 'height':'46.568','marginTop': 625.622, 'marginLeft': 50.211},
+						
+						{'elmtType':'img','id':'cta','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/Toyota_CTA.svg", 'width':'216.023', 'height':'47.618','marginTop': 685.725, 'marginLeft': 42.049},
+						
+						{'elmtType':'img','id':'greyBox','class':'ctaItem ctaLevel1','style':'background-color:#edf0f5;','width':'300', 'height':'145','marginTop': 605, 'marginLeft': 0}
+							 ]},
+				
+				{'300x900': [ 	
+								// video elements
+						
+						{'elmtType':'div','id':'player0','class':'slot0 hiddenPlayer0', width:'300', height:'168.75','marginTop':0, 'marginLeft':0},
+							   
+						{'elmtType':'div','id':'autoPlayer','class':'slot0','width': '300','height': '168.75','marginTop':0, 'marginLeft':0},							 
+							   
+						{'elmtType':'div','id':'player1','class':'thumbnailVideo','width':'85','height':'47.628','marginTop':180.7255, 'marginLeft':11.25},
+							   	
+						{'elmtType':'div','id':'player2','class':'thumbnailVideo ', 'width':'85', 'height':'47.628','marginTop':180.7255, 'marginLeft':203.75},
+							   
+						{'elmtType':'div','id':'player3','class':'thumbnailVideo player-hidden','width': '85','height': '47.628','marginTop':180.7255, 'marginLeft':107.5},
+							
+						{'elmtType':'div','class':'thumbnailsBg','style':'background-color:#000000;','width':'300','height':'143.158','marginTop':168.75, 'marginLeft':0},
+						
+						{'elmtType':'img','class':'slot1 thumbnail inactiveVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/whoweare.png",'width':'85','height': '47.628', 'marginTop':180.7255, 'marginLeft':11.25},
+							   
+						{'elmtType':'img','class':'slot2 thumbnail inactiveVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/whyquantcast.png",'width':'85', 'height':'47.628','marginTop':180.7255, 'marginLeft':203.75},
+							   
+						{'elmtType':'img','class':'slot3 thumbnail activeVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/measuretn.png", 'width':'85', 'height':'47.628','marginTop':180.7255, 'marginLeft':107.5},
+						
+						{'elmtType':'img','id':'autoplayClick','class':'slot0 autoplayClick','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/342x193-Video-RPWS.png",'width': '300','height': '168.75', 'marginTop':0, 'marginLeft':0},
+						
+								//supporting elements
+							   
+						{'elmtType':'img','id':'salesEvent','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/Sales.svg", 'width':'177.584', 'height':'191.13','marginTop':315.435, 'marginLeft':65},
+						
+						{'elmtType':'div','id':'2017PriusText','class':'ctaItem ctaLevel2','style':'font:700 14px Montserrat;color:#ffffff;text-align:center;','innerHTML':"2017 PRIUS", 'width':'82.529', 'height':'16.247','marginTop': 515.038, 'marginLeft': 110},
+						
+						{'elmtType':'div','id':'greatDealsText','class':'ctaItem ctaLevel2','style':'font:400 11px Montserrat;color:#ffffff;','innerHTML':"<b>Great Deals</b> Available at your local Toyota dealer", 'width':'131.086', 'height':'23.663','marginTop': 534.996, 'marginLeft': 95},
+						
+						{'elmtType':'img','id':'car','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/bluetoyota.svg", 'width':'357.591', 'height':'205.439','marginTop': 560, 'marginLeft': 0},
+						
+						{'elmtType':'img','id':'logo','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/toyota-lgp-logo.png", 'width':'199.578', 'height':'46.568','marginTop': 775, 'marginLeft': 50.211},
+						
+						{'elmtType':'img','id':'cta','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/Toyota_CTA.svg", 'width':'216.023', 'height':'47.618','marginTop': 830.725, 'marginLeft': 42.049},
+						
+						{'elmtType':'img','id':'greyBox','class':'ctaItem ctaLevel1','style':'background-color:#edf0f5;','width':'300', 'height':'145','marginTop': 755, 'marginLeft': 0}
+							 ]},
+				
+				{'600x300': [ 	
+								// video elements
+						
+						{'elmtType':'div','id':'player0','class':'slot0 hiddenPlayer0', width:'376', height:'211.5','marginTop':0, 'marginLeft':0},
+							   
+						{'elmtType':'div','id':'autoPlayer','class':'slot0','width': '376','height': '211.5','marginTop':0, 'marginLeft':0},							 
+							   
+						{'elmtType':'div','id':'player1','class':'thumbnailVideo','width':'106.667','height':'60','marginTop':225.75, 'marginLeft':13.99975},
+							   	
+						{'elmtType':'div','id':'player2','class':'thumbnailVideo ', 'width':'106.667', 'height':'60','marginTop':225.75, 'marginLeft':134.6665},
+							   
+						{'elmtType':'div','id':'player3','class':'thumbnailVideo player-hidden','width': '106.667','height': '60','marginTop':225.75, 'marginLeft':255.33325},
+							
+						{'elmtType':'div','class':'thumbnailsBg','style':'background-color:#000000;','width':'376','height':'88.5','marginTop':211.5, 'marginLeft':0},
+						
+						{'elmtType':'img','class':'slot1 thumbnail inactiveVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/whoweare.png",'width':'106.667','height': '60', 'marginTop':225.75, 'marginLeft':13.99975},
+							   
+						{'elmtType':'img','class':'slot2 thumbnail inactiveVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/whyquantcast.png",'width':'106.667', 'height':'60','marginTop':225.75, 'marginLeft':134.6665},
+							   
+						{'elmtType':'img','class':'slot3 thumbnail activeVideo','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/measuretn.png", 'width':'106.667', 'height':'60','marginTop':225.75, 'marginLeft':255.33325},
+						
+						{'elmtType':'img','id':'autoplayClick','class':'slot0 autoplayClick','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/342x193-Video-RPWS.png",'width': '376','height': '211.5', 'marginTop':0, 'marginLeft':0},
+						
+								//supporting elements
+							   
+						{'elmtType':'img','id':'salesEvent','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/Sales.svg", 'width':'100', 'height':'100','marginTop':5, 'marginLeft':380},
+						
+						{'elmtType':'div','id':'2017PriusText','class':'ctaItem ctaLevel2','style':'font:400 14px Montserrat;color:#ffffff;text-align:center;','innerHTML':"2017 PRIUS", 'width':'82.529', 'height':'16.247','marginTop': 30, 'marginLeft': 500},
+						
+						{'elmtType':'div','id':'greatDealsText','class':'ctaItem ctaLevel2','style':'font:400 8px Montserrat;color:#ffffff;','innerHTML':"Great deals available at your local Toyota dealer", 'width':'100', 'height':'23.663','marginTop': 50, 'marginLeft': 500},
+						
+						{'elmtType':'img','id':'car','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/bluetoyota.svg",'width':'204', 'height':'170','marginTop': 60, 'marginLeft': 410},
+						
+						{'elmtType':'img','id':'logo','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/toyota-lgp-logo.png", 'width':'120', 'height':'28.2','marginTop': 225, 'marginLeft': 426.5},
+						
+						{'elmtType':'img','id':'cta','class':'ctaItem ctaLevel2','src':"https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/Toyota_CTA.svg", 'width':'136', 'height':'30.22','marginTop': 260, 'marginLeft': 422.5},
+						
+						{'elmtType':'img','id':'greyBox','class':'ctaItem ctaLevel1','style':'background-color:#edf0f5;','width':'224', 'height':'88.5','marginTop': 211.5, 'marginLeft': 376}
+							 ]},
+				
+				{'750x300': []},
+				
+				{'900x300': []}
+				 
 			   	];
