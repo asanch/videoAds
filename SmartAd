@@ -1,0 +1,464 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Toyota Smart Ad</title>
+<link href="www.fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+<script type="text/javascript" src="manifest.json"></script>
+<script type="text/javascript">
+	/* overview
+	This function handles loading of YouTube players using the Youtube Iframe API. Two sizes should be defined, one for a main view and one for a thumbnail view
+	*/
+	
+// Set all the veriables that define content. 
+	var showControls = 1; 												// 0 means no controls 1 means with controls 
+	var defaultVolume = 50;											// volume the videos start to play at. 
+	var defaultQuality = 'default';
+
+// set the perams for each video   
+	var video1 = {
+	  	'videoID' : 'XX5wTD9VkLc',										// Video 1 perams 
+	  	'quality' : 'small',										// small, medium, large, hd720, hd1080, highres, default
+	  	'start' : 0,
+	  	'end' : 15,
+		'volume' : 100
+	}
+	
+	var video2 = {
+		'videoID' : '5FcfhH8gb5E',										// Video 2 perams
+		'quality' : 'hd1080',
+		'start' : 15,
+		'end' : 25,
+		'volume' : 100
+	}
+	
+	var video3 = {
+	  'videoID' : 'bAyp8HxfQvs',										// Video 3 perams
+	  'quality' : 'hd1080', 	 
+	  'start' : 15,
+	  'end' : 25,
+	  'volume' : 100
+	}
+
+// Set the auto play perameters 
+	var autoplayVideo = {
+	  'start' : 0,												// where the video should play from 
+	  'end' : 10, 							// Can change to just the end time if that is simpler. 
+	  'quality' : 'medium'											// small, medium, large, hd720, hd1080, highres, default
+	}
+
+// Set the clickTag	  
+	var clickTag = "https://www.quantcast.com/";
+	
+// Make no modifications to any variables after this point!!!!! -------------------------------------------------------------
+	var mainPlayerSize;
+	var thumbnailPlayerSize;
+	var slots = {};
+	
+//Player vars
+	var players = {};
+	var autoPlayer;
+	var videoPreferences = {'player0': video1,'player1': video2,'player2': video3};
+	var notPlaying = [-1,0,5];
+	
+	function onYouTubeIframeAPIReady() {
+	autoPlayer = new YT.Player('autoPlayer', {									
+        height: mainPlayerSize['height'],
+        width: mainPlayerSize['width'],
+		videoId: video1['videoID'],
+		playerVars: {
+			'rel': 0,
+			'enablejsapi': 1,
+			'iv_load_policy': 3,
+			'autoplay': 1,
+			'controls': 0,
+			'showinfo': 0,
+			'cc_load_policy': 0
+		}
+	});
+	players['player0'] = new YT.Player('player0', {									
+        height: mainPlayerSize['height'],
+        width: mainPlayerSize['width'],
+		videoId: video1['videoID'],
+		playerVars: {
+			'rel': 0,
+			'enablejsapi': 1,
+			'iv_load_policy': 3,
+			'autoplay': 0,
+			'controls': showControls,
+			'showinfo': 0,
+			'cc_load_policy': 0
+		}
+	});
+	players['player1'] = new YT.Player('player1', {
+		height: thumbnailPlayerSize['height'],
+        width: thumbnailPlayerSize['width'],
+		videoId: video2['videoID'],
+		playerVars: {
+			'rel': 0,
+			'enablejsapi': 1,
+			'iv_load_policy': 3,
+			'autoplay': 0,
+			'controls': showControls,
+			'showinfo': 0,
+			'cc_load_policy': 0
+		}	
+	});
+	players['player2'] = new YT.Player('player2', {
+		height: thumbnailPlayerSize['height'],
+        width: thumbnailPlayerSize['width'],
+		videoId: video3['videoID'],
+		playerVars: {
+			'rel': 0,
+			'enablejsapi': 1,
+			'iv_load_policy': 3,
+			'autoplay': 0,
+			'controls': showControls,
+			'showinfo': 0,
+			'cc_load_policy': 0
+		}
+	});
+  		autoPlayer.addEventListener("onReady", "onYouTubeAutoPlayerReady");
+		autoPlayer.addEventListener("onStateChange", "onYouTubeAutoPlayerStateChange");
+		players['player0'].addEventListener("onStateChange", "onYouTubePlayersStateChange");
+  		players['player1'].addEventListener("onStateChange", "onYouTubePlayersStateChange");
+		players['player2'].addEventListener("onStateChange", "onYouTubePlayersStateChange");
+	}
+
+	function onYouTubeAutoPlayerReady(event){
+		autoPlayer.mute();							// Autoplay player is ready for play, mute onload, set preferences
+		if(autoplayVideo['quality'] != 'null'){
+			autoPlayer.setPlaybackQuality(autoplayVideo['quality']);
+		}else{
+			autoPlayer.setPlaybackQuality(defaultQuality);
+		}
+		if(autoplayVideo['start'] != 'null' || autoplayVideo['start'] != 0){
+			autoPlayer.seekTo(autoplayVideo['start']);
+		}
+	}
+	
+	function onYouTubeAutoPlayerStateChange(event){ 
+		if(event.data == 0){						// Autoplay player has ended 
+			removeAutoPlay();
+		}
+		if(event.data == 1){						// Autoplay player has started
+			if(autoplayVideo['start'] != 'null' && autoplayVideo['end'] != 'null'){
+				setTimeout(function(){event.target.pauseVideo();}, (autoplayVideo['end']-autoplayVideo['start'])*1000);
+			}
+		}
+	}
+
+	function onYouTubePlayersStateChange(event){
+		var settings = videoPreferences[event.target.a.id];
+		if(event.data == 0){						// A player has ended								
+		}
+		if(event.data == 1){						// A player has started
+			moveVideoAndPlay(event.target);
+			if(settings['start'] != 'null' && settings['end'] != 'null'){
+				setTimeout(function(){event.target.pauseVideo();}, (settings['end']-settings['start'])*1000);
+			}
+		}
+		if(event.data == 2){						// A player has been paused
+		}
+		if(event.data == 3){						// A player is buffering
+			if(autoPlayer.getIframe() != null){
+				removeAutoPlay();
+			}
+			moveVideoAndPlay(event.target);
+			setDefaultsOrPreferences(event.target);
+		}
+	}
+	
+	function setDefaultsOrPreferences(player){
+		var settings = videoPreferences[player.a.id];
+		if (settings['quality'] != 'null'){
+			player.setPlaybackQuality(settings['quality']);
+		}else{
+			player.setPlaybackQuality(defaultQuality);
+		}
+		if (settings['start'] != 'null' || settings['start'] != 0){
+			player.seekTo(settings['start']);
+		}
+		if (settings['end'] != 'null'){
+		}
+		if (settings['volume'] != 'null'){
+			player.setVolume(settings['volume']);
+		}else{
+			player.setVolume(defaultVolume);
+		}
+	}
+	
+	function moveVideoAndPlay(player){
+		var elmts = document.getElementsByClassName('slot0'); //decide what is nowPlaying
+		for(i=0;i<elmts.length; i++){
+			if(elmts[i].width == mainPlayerSize['width'] && elmts[i].id != 'autoPlayer' && elmts[i].id != 'autoplayerClick'){
+				var nowPlaying = players[elmts[i].id];
+				}
+		}
+		if(player.a != nowPlaying.a){
+			moveBack(nowPlaying.a);
+			moveToPlay(player.a);
+			selectVideoForView(player.a);
+			console.log(nowPlaying.getPlayerState());
+			if(notPlaying.indexOf(nowPlaying.getPlayerState()) != -1){  //if found then not playing
+				nowPlaying.a.className = 'thumbnailVideo';
+			}
+		}
+	}
+	
+	function moveBack(player){
+		var slot;
+		if(player.id == 'player0'){
+			slot = 'player3';
+		}else{
+			slot= player.id;
+		}
+		players[player.id].pauseVideo();
+		player.style.height = String(thumbnailPlayerSize['height'])+'px';
+		player.style.width = String(thumbnailPlayerSize['width'])+'px';
+		player.height = thumbnailPlayerSize['height'];
+		player.width = thumbnailPlayerSize['width'];
+		player.style.top = String(slots[slot].top)+'px';
+		player.style.left = String(slots[slot].left)+'px';
+		player.className = 'thumbnailVideoPaused';
+	}
+	
+	function moveToPlay(player){
+		player.style.height = String(mainPlayerSize['height'])+'px';
+		player.style.width = String(mainPlayerSize['width'])+'px';
+		player.height = mainPlayerSize['height'];
+		player.width = mainPlayerSize['width'];
+		player.style.top = String(slots['player0'].top)+'px';
+		player.style.left = String(slots['player0'].left)+'px';
+		player.className = 'player0 slot0';
+	}
+	
+	function removeAutoPlay(){	
+		document.getElementById("player0").className = "slot0 player0";
+		document.getElementById("autoplayClick").style.display = "none";
+		autoPlayer.destroy();
+	}
+
+	function selectVideoForView(player){
+		var vidNodes = document.getElementsByClassName('thumbnail');
+		for(var i=0; i< vidNodes.length; i++){
+			if (vidNodes[i] == document.getElementById(player.id)){
+				vidNodes[i].classList.remove("inactiveVideo");
+				vidNodes[i].classList.add("activeVideo");
+			}else{
+				vidNodes[i].classList.remove("activeVideo");
+				vidNodes[i].classList.add("inactiveVideo");
+			}
+		}
+	}
+	
+	var optimizedResize = (function() {
+    var callbacks = [],
+        running = false;
+    // fired on resize event
+    function resize() {
+        if (!running) {
+            running = true;
+            if (window.requestAnimationFrame) {
+                window.requestAnimationFrame(runCallbacks);
+            } else {
+                setTimeout(runCallbacks, 66);
+            }
+        }
+    }
+    // run the actual callbacks
+    function runCallbacks() {
+        callbacks.forEach(function(callback) {
+            callback();
+        });
+        running = false;
+    }
+    // adds callback to loop
+    function addCallback(callback) {
+        if (callback) {
+            callbacks.push(callback);
+        }
+    }
+    return {
+        // public method to add additional callback
+        add: function(callback) {
+            if (!callbacks.length) { // if no callback added, 
+                window.addEventListener('resize', resize);
+            }
+            addCallback(callback);
+        }
+    }
+	}());
+	//window.addEventListener("resize", function(){alert('resize!')}, true);
+	
+	// start process
+	//optimizedResize.add(function(){reloadLayouts();});
+	
+	function loadLayout(){
+		var height = window.innerHeight;
+		var width = window.innerWidth;
+		manifestAd(width,height);
+		loadYouTubePlayers();
+	}
+	
+	function loadYouTubePlayers(){
+		// Load the Youtube Iframe API
+		var tag = document.createElement('script');
+		tag.src = "https://www.youtube.com/iframe_api";
+		var firstScriptTag = document.getElementsByTagName('script')[0];
+		firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+	}
+	
+	function manifestAd(actualWidth, actualHeight){
+		var body = document.body;				// create container element
+		var container = document.createElement('div');
+		container.className = 'container';
+		container.style.height = String(actualHeight)+'px';
+		container.style.width = String(actualWidth)+'px';
+		body.appendChild(container);
+   						
+		for(var i=0;i<manifest.length;i++){		//select the coverage area the Actual Width and Height are located
+			var floor = Object.keys(manifest[i])[0].split("x");
+			if(floor[0] <= actualWidth && floor[1] <= actualHeight){
+				var assets = manifest[i][String(floor[0])+"x"+String(floor[1])];
+				break;
+			}
+		}
+		if(assets.length == 0){
+			alert("error no assets loaded");
+		}
+		var delta = [actualWidth/floor[0],actualHeight/floor[1]];
+		for(var i=0; i<assets.length; i++){
+			var element;
+			var elmWidth = delta[0]*parseInt(assets[i].width)
+			var elmHeight = delta[1]*parseInt(assets[i].height);
+			var elmMargin = {'left':delta[0]*parseInt(assets[i].marginLeft),
+							 'top':delta[1]*parseInt(assets[i].marginTop)
+							};
+			if(assets[i].elmtType){
+					element = document.createElement(assets[i].elmtType);
+			}
+			if(assets[i].id){
+				element.id = assets[i].id;
+				if(assets[i].id == 'player0'){
+					mainPlayerSize = {'width': elmWidth,'height': elmHeight};
+					slots['player0'] = elmMargin;
+				}
+				if(assets[i].id == 'player1'){
+					thumbnailPlayerSize = {'width': elmWidth,'height': elmHeight};
+					slots['player1'] = elmMargin;
+				}
+				if(assets[i].id == 'player2'){
+					thumbnailPlayerSize = {'width': elmWidth,'height': elmHeight};
+					slots['player2'] = elmMargin;
+				}
+				if(assets[i].id == 'player3'){
+					thumbnailPlayerSize = {'width': elmWidth,'height': elmHeight};
+					slots['player3'] = elmMargin;
+				}
+			}
+			if(assets[i].class){
+					element.className = assets[i].class;
+			}
+			if(assets[i].style){
+					element.style = assets[i].style;
+			}
+			if(assets[i].innerHTML){
+					element.innerHTML = assets[i].innerHTML;
+			}
+			if(assets[i].src){
+					element.src = assets[i].src;
+			}
+			element.style.height = String(elmHeight)+'px';
+			element.style.width = String(elmWidth)+'px';
+			element.style.top = String(elmMargin['top'])+'px';
+			element.style.left = String(elmMargin['left'])+'px';
+			container.appendChild(element);
+		}
+	}
+	
+	window.onload = loadLayout;
+
+	</script>
+<style>
+	body{
+		font-family: proxima-nova,"Helvetica Neue",Arial,sans-serif;
+		margin:0;	}
+	.container{
+		position:relative;
+		background-color:#FAFAFA;
+		overflow: auto;
+		border: 1px solid #000000;
+		background-image: url("https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/toyota+gradient_BKG.svg");
+
+	}
+	.autoplayClick{
+		position:absolute;
+		z-index:2;
+	}
+	.autoPlayer{
+		position:absolute;
+		z-index:1;
+	}
+	.player-hidden{
+		display:none;
+		z-index:0;
+	}
+	.hiddenPlayer0{
+		position:absolute;
+		opacity:0;
+		z-index:3;
+	}
+	.player0{
+		position:absolute;
+		opacity:1 !important;
+		z-index:3;
+	}
+	.ctaItem{
+		position:absolute;
+		cursor:pointer;
+	}
+	.ctaLevel0{
+		z-index:0;
+	}
+	.ctaLevel1{
+		z-index:1;
+	}
+	.ctaLevel2{
+		z-index:2;
+	}
+	.ctaLevel3{
+		z-index:3;
+	}
+	.thumbnail{
+		position:absolute;
+		z-index:1;
+	}
+	.thumbnailsBg{
+		position:absolute;
+		z-index:0;
+		background-color:#202833;
+	}
+	.thumbnailVideo{
+		position:absolute;
+		opacity:0;
+		z-index:2;
+	}
+	.thumbnailVideoPaused{
+		position:absolute;
+		z-index:2;
+	}
+	.activeVideo{
+		-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+		-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+		box-sizing: border-box;         /* Opera/IE 8+ */
+		border: 2px solid #cc181e;
+	}
+	.inactiveVideo{
+		opacity:0.7;
+	}
+	</style>
+</head>
+<body>
+</body>
+</html>
