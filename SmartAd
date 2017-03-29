@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Toyota Smart Ad</title>
-<link href="www.fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
 <script type="text/javascript" src="manifest.json"></script>
 <script type="text/javascript">
 	/* overview
@@ -298,7 +298,7 @@
 		var height = window.innerHeight;
 		var width = window.innerWidth;
 		manifestAd(width,height);
-		loadYouTubePlayers();
+		//loadYouTubePlayers();
 	}
 	
 	function loadYouTubePlayers(){
@@ -310,24 +310,33 @@
 	}
 	
 	function manifestAd(actualWidth, actualHeight){
+		console.log("Width"+String(actualWidth)+"-Height"+String(actualHeight));
 		var body = document.body;				// create container element
 		var container = document.createElement('div');
 		container.className = 'container';
 		container.style.height = String(actualHeight)+'px';
 		container.style.width = String(actualWidth)+'px';
 		body.appendChild(container);
-   						
 		for(var i=0;i<manifest.length;i++){		//select the coverage area the Actual Width and Height are located
-			var floor = Object.keys(manifest[i])[0].split("x");
-			if(floor[0] <= actualWidth && floor[1] <= actualHeight){
-				var assets = manifest[i][String(floor[0])+"x"+String(floor[1])];
-				break;
+			var celing;
+			var currentFloor = Object.keys(manifest[i])[0].split("x");
+			if(manifest.length>(i+1)){
+				celing = Object.keys(manifest[i+1])[0].split("x");
+			}else{
+				celing = [1000,1000]; 
+			}
+			if(parseInt(currentFloor[0]) <= actualWidth && parseInt(currentFloor[1]) <= actualHeight){
+				if(actualWidth < parseInt(celing[0]) || actualHeight < parseInt(celing[1])){
+					var assets = manifest[i][String(currentFloor[0])+"x"+String(currentFloor[1])];
+					var floor = currentFloor;
+				}
 			}
 		}
 		if(assets.length == 0){
 			alert("error no assets loaded");
 		}
 		var delta = [actualWidth/floor[0],actualHeight/floor[1]];
+		console.log(floor);
 		for(var i=0; i<assets.length; i++){
 			var element;
 			var elmWidth = delta[0]*parseInt(assets[i].width)
@@ -369,6 +378,12 @@
 			if(assets[i].src){
 					element.src = assets[i].src;
 			}
+/*			if(assets[i].data){
+					element.data = assets[i].data;
+			}
+			if(assets[i].type){
+					element.type = assets[i].type;
+			}*/
 			element.style.height = String(elmHeight)+'px';
 			element.style.width = String(elmWidth)+'px';
 			element.style.top = String(elmMargin['top'])+'px';
@@ -383,14 +398,14 @@
 <style>
 	body{
 		font-family: proxima-nova,"Helvetica Neue",Arial,sans-serif;
-		margin:0;	}
+		margin:0;
+		overflow: hidden;
+	}
 	.container{
 		position:relative;
 		background-color:#FAFAFA;
-		overflow: auto;
 		border: 1px solid #000000;
 		background-image: url("https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/toyota+gradient_BKG.svg");
-
 	}
 	.autoplayClick{
 		position:absolute;
