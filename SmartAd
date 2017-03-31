@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <title>Toyota Smart Ad</title>
 <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
-<script type="text/javascript" src="manifest.json"></script>
-<script type="text/javascript">
+<script id="test" type="text/javascript" src="	https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/manifest.json"></script>
+<script id="test1" type="text/javascript">
 	/* overview
 	This function handles loading of YouTube players using the Youtube Iframe API. Two sizes should be defined, one for a main view and one for a thumbnail view
 	*/
@@ -17,34 +17,34 @@
 
 // set the perams for each video   
 	var video1 = {
-	  	'videoID' : 'XX5wTD9VkLc',										// Video 1 perams 
-	  	'quality' : 'small',										// small, medium, large, hd720, hd1080, highres, default
+	  	'videoID' : 'xOCVxROEsNk',										// Video 1 perams 
+	  	'quality' : 'hd180',										// small, medium, large, hd720, hd1080, highres, default
 	  	'start' : 0,
 	  	'end' : 15,
 		'volume' : 100
 	}
 	
 	var video2 = {
-		'videoID' : '5FcfhH8gb5E',										// Video 2 perams
+		'videoID' : '01yWRNSNAa8',										// Video 2 perams
 		'quality' : 'hd1080',
-		'start' : 15,
-		'end' : 25,
+		'start' : 0,
+		'end' : 15,
 		'volume' : 100
 	}
 	
 	var video3 = {
-	  'videoID' : 'bAyp8HxfQvs',										// Video 3 perams
+	  'videoID' : '53uRYZCjNaQ',										// Video 3 perams
 	  'quality' : 'hd1080', 	 
-	  'start' : 15,
-	  'end' : 25,
+	  'start' : 0,
+	  'end' : 15,
 	  'volume' : 100
 	}
 
 // Set the auto play perameters 
 	var autoplayVideo = {
 	  'start' : 0,												// where the video should play from 
-	  'end' : 10, 							// Can change to just the end time if that is simpler. 
-	  'quality' : 'medium'											// small, medium, large, hd720, hd1080, highres, default
+	  'end' : 5, 							// Can change to just the end time if that is simpler. 
+	  'quality' : 'hd1080'											// small, medium, large, hd720, hd1080, highres, default
 	}
 
 // Set the clickTag	  
@@ -54,6 +54,7 @@
 	var mainPlayerSize;
 	var thumbnailPlayerSize;
 	var slots = {};
+	var resizeTimeout;
 	
 //Player vars
 	var players = {};
@@ -198,8 +199,6 @@
 		if(player.a != nowPlaying.a){
 			moveBack(nowPlaying.a);
 			moveToPlay(player.a);
-			selectVideoForView(player.a);
-			console.log(nowPlaying.getPlayerState());
 			if(notPlaying.indexOf(nowPlaying.getPlayerState()) != -1){  //if found then not playing
 				nowPlaying.a.className = 'thumbnailVideo';
 			}
@@ -251,54 +250,34 @@
 			}
 		}
 	}
+
+	function resizeThrottler() {
+		if( !resizeTimeout ) {
+			resizeTimeout = setTimeout(function(){
+									   resizeTimeout = null;
+									   actualResizeHandler();
+									   }, 500);
+		}
+	}
 	
-	var optimizedResize = (function() {
-    var callbacks = [],
-        running = false;
-    // fired on resize event
-    function resize() {
-        if (!running) {
-            running = true;
-            if (window.requestAnimationFrame) {
-                window.requestAnimationFrame(runCallbacks);
-            } else {
-                setTimeout(runCallbacks, 66);
-            }
-        }
-    }
-    // run the actual callbacks
-    function runCallbacks() {
-        callbacks.forEach(function(callback) {
-            callback();
-        });
-        running = false;
-    }
-    // adds callback to loop
-    function addCallback(callback) {
-        if (callback) {
-            callbacks.push(callback);
-        }
-    }
-    return {
-        // public method to add additional callback
-        add: function(callback) {
-            if (!callbacks.length) { // if no callback added, 
-                window.addEventListener('resize', resize);
-            }
-            addCallback(callback);
-        }
-    }
-	}());
-	//window.addEventListener("resize", function(){alert('resize!')}, true);
-	
-	// start process
-	//optimizedResize.add(function(){reloadLayouts();});
+	function actualResizeHandler(){
+		var parent = document.getElementsByTagName('body')[0];
+		var child = document.getElementById('container');
+		parent.removeChild(child);
+/*		var scripts = document.getElementsByTagName('script');
+		for( var i=0; i<scripts.length;i++){
+			if(!scripts[i].id){
+				scripts[i].parentNode.removeChild(scripts[i]);
+			}
+		}*/
+		loadLayout();
+	}
 	
 	function loadLayout(){
 		var height = window.innerHeight;
 		var width = window.innerWidth;
 		manifestAd(width,height);
-		//loadYouTubePlayers();
+		loadYouTubePlayers();
 	}
 	
 	function loadYouTubePlayers(){
@@ -310,12 +289,9 @@
 	}
 	
 	function manifestAd(actualWidth, actualHeight){
-		console.log("Width"+String(actualWidth)+"-Height"+String(actualHeight));
 		var body = document.body;				// create container element
 		var container = document.createElement('div');
-		container.className = 'container';
-		container.style.height = String(actualHeight)+'px';
-		container.style.width = String(actualWidth)+'px';
+		container.id = 'container';
 		body.appendChild(container);
 		for(var i=0;i<manifest.length;i++){		//select the coverage area the Actual Width and Height are located
 			var celing;
@@ -332,11 +308,13 @@
 				}
 			}
 		}
-		if(assets.length == 0){
-			alert("error no assets loaded");
-		}
+		if(!assets){
+		}else{
+		container.className = 'container';
+		container.style.height = String(actualHeight)+'px';
+		container.style.width = String(actualWidth)+'px';
+		container.style.backgroundImage = "url('https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/toyota+gradient_BKG.svg')";
 		var delta = [actualWidth/floor[0],actualHeight/floor[1]];
-		console.log(floor);
 		for(var i=0; i<assets.length; i++){
 			var element;
 			var elmWidth = delta[0]*parseInt(assets[i].width)
@@ -378,21 +356,20 @@
 			if(assets[i].src){
 					element.src = assets[i].src;
 			}
-/*			if(assets[i].data){
-					element.data = assets[i].data;
+			if(assets[i].onClick){
+					element.onclick = function(){window.open(clickTag, '_blank');};
 			}
-			if(assets[i].type){
-					element.type = assets[i].type;
-			}*/
 			element.style.height = String(elmHeight)+'px';
 			element.style.width = String(elmWidth)+'px';
 			element.style.top = String(elmMargin['top'])+'px';
 			element.style.left = String(elmMargin['left'])+'px';
 			container.appendChild(element);
 		}
+		}
 	}
 	
 	window.onload = loadLayout;
+	window.addEventListener("resize", resizeThrottler, false);
 
 	</script>
 <style>
@@ -405,7 +382,6 @@
 		position:relative;
 		background-color:#FAFAFA;
 		border: 1px solid #000000;
-		background-image: url("https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/toyota+gradient_BKG.svg");
 	}
 	.autoplayClick{
 		position:absolute;
@@ -463,15 +439,15 @@
 		position:absolute;
 		z-index:2;
 	}
-	.activeVideo{
-		-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-		-moz-box-sizing: border-box;    /* Firefox, other Gecko */
-		box-sizing: border-box;         /* Opera/IE 8+ */
+	/*.activeVideo{
+		-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit 
+		-moz-box-sizing: border-box;    /* Firefox, other Gecko 
+		box-sizing: border-box;         /* Opera/IE 8+ 
 		border: 2px solid #cc181e;
 	}
 	.inactiveVideo{
 		opacity:0.7;
-	}
+	} */
 	</style>
 </head>
 <body>
