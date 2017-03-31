@@ -51,16 +51,16 @@
 	var clickTag = "https://www.quantcast.com/";
 	
 // Make no modifications to any variables after this point!!!!! -------------------------------------------------------------
+	var videoPreferences = {'player0': video1,'player1': video2,'player2': video3};
+	var notPlaying = [-1,0,5];
+	var resizeTimeout;
+	
+	
 	var mainPlayerSize;
 	var thumbnailPlayerSize;
 	var slots = {};
-	var resizeTimeout;
-	
-//Player vars
 	var players = {};
 	var autoPlayer;
-	var videoPreferences = {'player0': video1,'player1': video2,'player2': video3};
-	var notPlaying = [-1,0,5];
 	
 	function onYouTubeIframeAPIReady() {
 	autoPlayer = new YT.Player('autoPlayer', {									
@@ -264,12 +264,6 @@
 		var parent = document.getElementsByTagName('body')[0];
 		var child = document.getElementById('container');
 		parent.removeChild(child);
-/*		var scripts = document.getElementsByTagName('script');
-		for( var i=0; i<scripts.length;i++){
-			if(!scripts[i].id){
-				scripts[i].parentNode.removeChild(scripts[i]);
-			}
-		}*/
 		loadLayout();
 	}
 	
