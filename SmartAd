@@ -4,56 +4,397 @@
 <meta charset="UTF-8">
 <title>Toyota Smart Ad</title>
 <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
-<script id="test" type="text/javascript" src="	https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/manifest.json"></script>
-<script id="test1" type="text/javascript">
-	/* overview
-	This function handles loading of YouTube players using the Youtube Iframe API. Two sizes should be defined, one for a main view and one for a thumbnail view
-	*/
-// Set all the veriables that define content. 
-	var showControls = 1; 												// 0 means no controls 1 means with controls 
-	var defaultVolume = 50;											// volume the videos start to play at. 
-	var defaultQuality = 'default';
+<script type="text/javascript">
+	(function(){
+		var tag = document.createElement('script');
+		tag.src = "https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/manifest.json"+"?"+String(Math.floor((Math.random() * 100) + 1));
+		var firstScriptTag = document.getElementsByTagName('script')[0];
+		firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+	})();
+	</script>
+<script type="text/javascript">
+	var videoPreferences = {'player0': video1,'player1': video2,'player2': video3};
+	var notPlaying = [-1,0,5];
+	var resizeTimeout;
+	var mainPlayerSize;
+	var thumbnailPlayerSize;
+	var slots = {};
+	var players = {};
+	var autoPlayer;
+	var video1;
+	var video2;
+	var video3;
+	
+	function onYouTubeIframeAPIReady() {
+	autoPlayer = new YT.Player('autoPlayer', {									
+        height: mainPlayerSize['height'],
+        width: mainPlayerSize['width'],
+		videoId: video1['videoID'],
+		playerVars: {
+			'rel': 0,
+			'enablejsapi': 1,
+			'iv_load_policy': 3,
+			'autoplay': 1,
+			'controls': 0,
+			'showinfo': 0,
+			'cc_load_policy': 0
+		}
+	});
+	players['player0'] = new YT.Player('player0', {									
+        height: mainPlayerSize['height'],
+        width: mainPlayerSize['width'],
+		videoId: video1['videoID'],
+		playerVars: {
+			'rel': 0,
+			'enablejsapi': 1,
+			'iv_load_policy': 3,
+			'autoplay': 0,
+			'controls': showControls,
+			'showinfo': 0,
+			'cc_load_policy': 0
+		}
+	});
+	players['player1'] = new YT.Player('player1', {
+		height: thumbnailPlayerSize['height'],
+        width: thumbnailPlayerSize['width'],
+		videoId: video2['videoID'],
+		playerVars: {
+			'rel': 0,
+			'enablejsapi': 1,
+			'iv_load_policy': 3,
+			'autoplay': 0,
+			'controls': showControls,
+			'showinfo': 0,
+			'cc_load_policy': 0
+		}	
+	});
+	players['player2'] = new YT.Player('player2', {
+		height: thumbnailPlayerSize['height'],
+        width: thumbnailPlayerSize['width'],
+		videoId: video3['videoID'],
+		playerVars: {
+			'rel': 0,
+			'enablejsapi': 1,
+			'iv_load_policy': 3,
+			'autoplay': 0,
+			'controls': showControls,
+			'showinfo': 0,
+			'cc_load_policy': 0
+		}
+	});
+  		autoPlayer.addEventListener("onReady", "onYouTubeAutoPlayerReady");
+		autoPlayer.addEventListener("onStateChange", "onYouTubeAutoPlayerStateChange");
+		players['player0'].addEventListener("onStateChange", "onYouTubePlayersStateChange");
+  		players['player1'].addEventListener("onStateChange", "onYouTubePlayersStateChange");
+		players['player2'].addEventListener("onStateChange", "onYouTubePlayersStateChange");
+	}
 
-// set the perams for each video   
-	var video1 = {
-	  	'videoID' : 'xOCVxROEsNk',										// Video 1 perams 
-	  	'quality' : 'hd180',										// small, medium, large, hd720, hd1080, highres, default
-	  	'start' : 0,
-	  	'end' : 15,
-		'volume' : 100
+	function onYouTubeAutoPlayerReady(event){
+		autoPlayer.mute();							// Autoplay player is ready for play, mute onload, set preferences
+		if(autoplayVideo['quality'] != 'null'){
+			autoPlayer.setPlaybackQuality(autoplayVideo['quality']);
+		}else{
+			autoPlayer.setPlaybackQuality(defaultQuality);
+		}
+		if(autoplayVideo['start'] != 'null' || autoplayVideo['start'] != 0){
+			autoPlayer.seekTo(autoplayVideo['start']);
+		}
 	}
 	
-	var video2 = {
-		'videoID' : '01yWRNSNAa8',										// Video 2 perams
-		'quality' : 'hd1080',
-		'start' : 0,
-		'end' : 15,
-		'volume' : 100
-	}
-	
-	var video3 = {
-	  'videoID' : '53uRYZCjNaQ',										// Video 3 perams
-	  'quality' : 'hd1080', 	 
-	  'start' : 0,
-	  'end' : 15,
-	  'volume' : 100
+	function onYouTubeAutoPlayerStateChange(event){ 
+		if(event.data == 0){						// Autoplay player has ended 
+			removeAutoPlay();
+		}
+		if(event.data == 1){						// Autoplay player has started
+			if(autoplayVideo['start'] != 'null' && autoplayVideo['end'] != 'null'){
+				setTimeout(function(){event.target.pauseVideo();}, (autoplayVideo['end']-autoplayVideo['start'])*1000);
+			}
+		}
 	}
 
-// Set the auto play perameters 
-	var autoplayVideo = {
-	  'start' : 0,												// where the video should play from 
-	  'end' : 5, 							// Can change to just the end time if that is simpler. 
-	  'quality' : 'hd1080'											// small, medium, large, hd720, hd1080, highres, default
+	function onYouTubePlayersStateChange(event){
+		var settings = videoPreferences[event.target.a.id];
+		if(event.data == 0){						// A player has ended								
+		}
+		if(event.data == 1){						// A player has started
+			moveVideoAndPlay(event.target);
+			if(settings['start'] != 'null' && settings['end'] != 'null'){
+				setTimeout(function(){event.target.pauseVideo();}, (settings['end']-settings['start'])*1000);
+			}
+		}
+		if(event.data == 2){						// A player has been paused
+		}
+		if(event.data == 3){						// A player is buffering
+			if(autoPlayer.getIframe() != null){
+				removeAutoPlay();
+			}
+			moveVideoAndPlay(event.target);
+			setDefaultsOrPreferences(event.target);
+		}
+	}
+	
+	function setDefaultsOrPreferences(player){
+		var settings = videoPreferences[player.a.id];
+		if (settings['quality'] != 'null'){
+			player.setPlaybackQuality(settings['quality']);
+		}else{
+			player.setPlaybackQuality(defaultQuality);
+		}
+		if (settings['start'] != 'null' || settings['start'] != 0){
+			player.seekTo(settings['start']);
+		}
+		if (settings['end'] != 'null'){
+		}
+		if (settings['volume'] != 'null'){
+			player.setVolume(settings['volume']);
+		}else{
+			player.setVolume(defaultVolume);
+		}
+	}
+	
+	function moveVideoAndPlay(player){
+		var elmts = document.getElementsByClassName('slot0'); //decide what is nowPlaying
+		for(i=0;i<elmts.length; i++){
+			if(elmts[i].width == mainPlayerSize['width'] && elmts[i].id != 'autoPlayer' && elmts[i].id != 'autoplayerClick'){
+				var nowPlaying = players[elmts[i].id];
+				}
+		}
+		if(player.a != nowPlaying.a){
+			moveBack(nowPlaying.a);
+			moveToPlay(player.a);
+			if(notPlaying.indexOf(nowPlaying.getPlayerState()) != -1){  //if found then not playing
+				nowPlaying.a.className = 'thumbnailVideo';
+			}
+		}
+	}
+	
+	function moveBack(player){
+		var slot;
+		if(player.id == 'player0'){
+			slot = 'player3';
+		}else{
+			slot= player.id;
+		}
+		players[player.id].pauseVideo();
+		player.style.height = String(thumbnailPlayerSize['height'])+'px';
+		player.style.width = String(thumbnailPlayerSize['width'])+'px';
+		player.height = thumbnailPlayerSize['height'];
+		player.width = thumbnailPlayerSize['width'];
+		player.style.top = String(slots[slot].top)+'px';
+		player.style.left = String(slots[slot].left)+'px';
+		player.className = 'thumbnailVideoPaused';
+	}
+	
+	function moveToPlay(player){
+		player.style.height = String(mainPlayerSize['height'])+'px';
+		player.style.width = String(mainPlayerSize['width'])+'px';
+		player.height = mainPlayerSize['height'];
+		player.width = mainPlayerSize['width'];
+		player.style.top = String(slots['player0'].top)+'px';
+		player.style.left = String(slots['player0'].left)+'px';
+		player.className = 'player0 slot0';
+	}
+	
+	function removeAutoPlay(){	
+		document.getElementById("player0").className = "slot0 player0";
+		document.getElementById("autoplayClick").style.display = "none";
+		autoPlayer.destroy();
 	}
 
-// Set the clickTag	  
-	var clickTag = "https://www.quantcast.com/";
+	function selectVideoForView(player){
+		var vidNodes = document.getElementsByClassName('thumbnail');
+		for(var i=0; i< vidNodes.length; i++){
+			if (vidNodes[i] == document.getElementById(player.id)){
+				vidNodes[i].classList.remove("inactiveVideo");
+				vidNodes[i].classList.add("activeVideo");
+			}else{
+				vidNodes[i].classList.remove("activeVideo");
+				vidNodes[i].classList.add("inactiveVideo");
+			}
+		}
+	}
+
+	function resizeThrottler() {
+		if( !resizeTimeout ) {
+			resizeTimeout = setTimeout(function(){
+									   resizeTimeout = null;
+									   actualResizeHandler();
+									   }, 500);
+		}
+	}
 	
-// Make no modifications to any variables after this point!!!!! -------------------------------------------------------------
-	function onYouTubeIframeAPIReady(){autoPlayer=new YT.Player("autoPlayer",{height:mainPlayerSize.height,width:mainPlayerSize.width,videoId:video1.videoID,playerVars:{rel:0,enablejsapi:1,iv_load_policy:3,autoplay:1,controls:0,showinfo:0,cc_load_policy:0}}),players.player0=new YT.Player("player0",{height:mainPlayerSize.height,width:mainPlayerSize.width,videoId:video1.videoID,playerVars:{rel:0,enablejsapi:1,iv_load_policy:3,autoplay:0,controls:showControls,showinfo:0,cc_load_policy:0}}),players.player1=new YT.Player("player1",{height:thumbnailPlayerSize.height,width:thumbnailPlayerSize.width,videoId:video2.videoID,playerVars:{rel:0,enablejsapi:1,iv_load_policy:3,autoplay:0,controls:showControls,showinfo:0,cc_load_policy:0}}),players.player2=new YT.Player("player2",{height:thumbnailPlayerSize.height,width:thumbnailPlayerSize.width,videoId:video3.videoID,playerVars:{rel:0,enablejsapi:1,iv_load_policy:3,autoplay:0,controls:showControls,showinfo:0,cc_load_policy:0}}),autoPlayer.addEventListener("onReady","onYouTubeAutoPlayerReady"),autoPlayer.addEventListener("onStateChange","onYouTubeAutoPlayerStateChange"),players.player0.addEventListener("onStateChange","onYouTubePlayersStateChange"),players.player1.addEventListener("onStateChange","onYouTubePlayersStateChange"),players.player2.addEventListener("onStateChange","onYouTubePlayersStateChange")}function onYouTubeAutoPlayerReady(a){autoPlayer.mute(),"null"!=autoplayVideo.quality?autoPlayer.setPlaybackQuality(autoplayVideo.quality):autoPlayer.setPlaybackQuality(defaultQuality),"null"==autoplayVideo.start&&0==autoplayVideo.start||autoPlayer.seekTo(autoplayVideo.start)}function onYouTubeAutoPlayerStateChange(a){0==a.data&&removeAutoPlay(),1==a.data&&"null"!=autoplayVideo.start&&"null"!=autoplayVideo.end&&setTimeout(function(){a.target.pauseVideo()},1e3*(autoplayVideo.end-autoplayVideo.start))}function onYouTubePlayersStateChange(a){var b=videoPreferences[a.target.a.id];0==a.data,1==a.data&&(moveVideoAndPlay(a.target),"null"!=b.start&&"null"!=b.end&&setTimeout(function(){a.target.pauseVideo()},1e3*(b.end-b.start))),2==a.data,3==a.data&&(null!=autoPlayer.getIframe()&&removeAutoPlay(),moveVideoAndPlay(a.target),setDefaultsOrPreferences(a.target))}function setDefaultsOrPreferences(a){var b=videoPreferences[a.a.id];"null"!=b.quality?a.setPlaybackQuality(b.quality):a.setPlaybackQuality(defaultQuality),"null"==b.start&&0==b.start||a.seekTo(b.start),"null"!=b.end,"null"!=b.volume?a.setVolume(b.volume):a.setVolume(defaultVolume)}function moveVideoAndPlay(a){var b=document.getElementsByClassName("slot0");for(i=0;i<b.length;i++)if(b[i].width==mainPlayerSize.width&&"autoPlayer"!=b[i].id&&"autoplayerClick"!=b[i].id)var c=players[b[i].id];a.a!=c.a&&(moveBack(c.a),moveToPlay(a.a),notPlaying.indexOf(c.getPlayerState())!=-1&&(c.a.className="thumbnailVideo"))}function moveBack(a){var b;b="player0"==a.id?"player3":a.id,players[a.id].pauseVideo(),a.style.height=String(thumbnailPlayerSize.height)+"px",a.style.width=String(thumbnailPlayerSize.width)+"px",a.height=thumbnailPlayerSize.height,a.width=thumbnailPlayerSize.width,a.style.top=String(slots[b].top)+"px",a.style.left=String(slots[b].left)+"px",a.className="thumbnailVideoPaused"}function moveToPlay(a){a.style.height=String(mainPlayerSize.height)+"px",a.style.width=String(mainPlayerSize.width)+"px",a.height=mainPlayerSize.height,a.width=mainPlayerSize.width,a.style.top=String(slots.player0.top)+"px",a.style.left=String(slots.player0.left)+"px",a.className="player0 slot0"}function removeAutoPlay(){document.getElementById("player0").className="slot0 player0",document.getElementById("autoplayClick").style.display="none",autoPlayer.destroy()}function selectVideoForView(a){for(var b=document.getElementsByClassName("thumbnail"),c=0;c<b.length;c++)b[c]==document.getElementById(a.id)?(b[c].classList.remove("inactiveVideo"),b[c].classList.add("activeVideo")):(b[c].classList.remove("activeVideo"),b[c].classList.add("inactiveVideo"))}function resizeThrottler(){resizeTimeout||(resizeTimeout=setTimeout(function(){resizeTimeout=null,actualResizeHandler()},500))}function actualResizeHandler(){var a=document.getElementsByTagName("body")[0],b=document.getElementById("container");a.removeChild(b),loadLayout()}function loadLayout(){var a=window.innerHeight,b=window.innerWidth;manifestAd(b,a),loadYouTubePlayers()}function loadYouTubePlayers(){var a=document.createElement("script");a.src="https://www.youtube.com/iframe_api";var b=document.getElementsByTagName("script")[0];b.parentNode.insertBefore(a,b)}function manifestAd(a,b){var c=document.body,d=document.createElement("div");d.id="container",c.appendChild(d);for(var e=0;e<manifest.length;e++){var f,g=Object.keys(manifest[e])[0].split("x");if(f=manifest.length>e+1?Object.keys(manifest[e+1])[0].split("x"):[1e3,1e3],parseInt(g[0])<=a&&parseInt(g[1])<=b&&(a<parseInt(f[0])||b<parseInt(f[1])))var h=manifest[e][String(g[0])+"x"+String(g[1])],i=g}if(h){d.className="container",d.style.height=String(b)+"px",d.style.width=String(a)+"px",d.style.backgroundImage="url('https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/toyota+gradient_BKG.svg')";for(var j=[a/i[0],b/i[1]],e=0;e<h.length;e++){var k,l=j[0]*parseInt(h[e].width),m=j[1]*parseInt(h[e].height),n={left:j[0]*parseInt(h[e].marginLeft),top:j[1]*parseInt(h[e].marginTop)};h[e].elmtType&&(k=document.createElement(h[e].elmtType)),h[e].id&&(k.id=h[e].id,"player0"==h[e].id&&(mainPlayerSize={width:l,height:m},slots.player0=n),"player1"==h[e].id&&(thumbnailPlayerSize={width:l,height:m},slots.player1=n),"player2"==h[e].id&&(thumbnailPlayerSize={width:l,height:m},slots.player2=n),"player3"==h[e].id&&(thumbnailPlayerSize={width:l,height:m},slots.player3=n)),h[e].class&&(k.className=h[e].class),h[e].style&&(k.style=h[e].style),h[e].innerHTML&&(k.innerHTML=h[e].innerHTML),h[e].src&&(k.src=h[e].src),h[e].onClick&&(k.onclick=function(){window.open(clickTag,"_blank")}),k.style.height=String(m)+"px",k.style.width=String(l)+"px",k.style.top=String(n.top)+"px",k.style.left=String(n.left)+"px",d.appendChild(k)}}else;}var videoPreferences={player0:video1,player1:video2,player2:video3},notPlaying=[-1,0,5],resizeTimeout,mainPlayerSize,thumbnailPlayerSize,slots={},players={},autoPlayer;window.onload=loadLayout,window.addEventListener("resize",resizeThrottler,!1);
+	function actualResizeHandler(){
+		var parent = document.getElementsByTagName('body')[0];
+		var child = document.getElementById('container');
+		parent.removeChild(child);
+		loadLayout();
+	}
+	
+	function loadLayout(){
+		var height = window.innerHeight;
+		var width = window.innerWidth;
+		manifestAd(width,height);
+		loadYouTubePlayers();
+	}
+	
+	function loadYouTubePlayers(){
+		// Load the Youtube Iframe API
+		var tag = document.createElement('script');
+		tag.src = "https://www.youtube.com/iframe_api";
+		var firstScriptTag = document.getElementsByTagName('script')[0];
+		firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+	}
+	
+	function manifestAd(actualWidth, actualHeight){
+		var body = document.body;				// create container element
+		var container = document.createElement('div');
+		container.id = 'container';
+		body.appendChild(container);
+		for(var i=0;i<manifest.length;i++){		//select the coverage area the Actual Width and Height are located
+			var celing;
+			var currentFloor = Object.keys(manifest[i])[0].split("x");
+			if(manifest.length>(i+1)){
+				celing = Object.keys(manifest[i+1])[0].split("x");
+			}else{
+				celing = [1000,1000]; 
+			}
+			if(parseInt(currentFloor[0]) <= actualWidth && parseInt(currentFloor[1]) <= actualHeight){
+				if(actualWidth < parseInt(celing[0]) || actualHeight < parseInt(celing[1])){
+					var assets = manifest[i][String(currentFloor[0])+"x"+String(currentFloor[1])];
+					var floor = currentFloor;
+				}
+			}
+		}
+		if(!assets){
+		}else{
+		container.className = 'container';
+		container.style.height = String(actualHeight)+'px';
+		container.style.width = String(actualWidth)+'px';
+		container.style.backgroundImage = "url('https://s3-us-west-2.amazonaws.com/apollo-creative/Toyota+Smart+Ad/toyota+gradient_BKG.svg')";
+		var delta = [actualWidth/floor[0],actualHeight/floor[1]];
+		for(var i=0; i<assets.length; i++){
+			var element;
+			var elmWidth = delta[0]*parseInt(assets[i].width)
+			var elmHeight = delta[1]*parseInt(assets[i].height);
+			var elmMargin = {'left':delta[0]*parseInt(assets[i].marginLeft),
+							 'top':delta[1]*parseInt(assets[i].marginTop)
+							};
+			if(assets[i].elmtType){
+					element = document.createElement(assets[i].elmtType);
+			}
+			if(assets[i].id){
+				element.id = assets[i].id;
+				if(assets[i].id == 'player0'){
+					mainPlayerSize = {'width': elmWidth,'height': elmHeight};
+					slots['player0'] = elmMargin;
+				}
+				if(assets[i].id == 'player1'){
+					thumbnailPlayerSize = {'width': elmWidth,'height': elmHeight};
+					slots['player1'] = elmMargin;
+				}
+				if(assets[i].id == 'player2'){
+					thumbnailPlayerSize = {'width': elmWidth,'height': elmHeight};
+					slots['player2'] = elmMargin;
+				}
+				if(assets[i].id == 'player3'){
+					thumbnailPlayerSize = {'width': elmWidth,'height': elmHeight};
+					slots['player3'] = elmMargin;
+				}
+			}
+			if(assets[i].class){
+					element.className = assets[i].class;
+			}
+			if(assets[i].style){
+					element.style = assets[i].style;
+			}
+			if(assets[i].innerHTML){
+					element.innerHTML = assets[i].innerHTML;
+			}
+			if(assets[i].src){
+					element.src = assets[i].src;
+			}
+			if(assets[i].onClick){
+					element.onclick = function(){window.open(clickTag, '_blank');};
+			}
+			element.style.height = String(elmHeight)+'px';
+			element.style.width = String(elmWidth)+'px';
+			element.style.top = String(elmMargin['top'])+'px';
+			element.style.left = String(elmMargin['left'])+'px';
+			container.appendChild(element);
+		}
+		}
+	}
+	window.onload = loadLayout;
+	window.addEventListener("resize", resizeThrottler, false);
+
 	</script>
 <style>
-body{font-family:proxima-nova,"Helvetica Neue",Arial,sans-serif;margin:0;overflow:hidden}.container{position:relative;background-color:#FAFAFA;border:1px solid #000}.autoplayClick{position:absolute;z-index:2}.autoPlayer{position:absolute;z-index:1}.player-hidden{display:none;z-index:0}.hiddenPlayer0,.player0{z-index:3;position:absolute}.hiddenPlayer0{opacity:0}.player0{opacity:1!important}.ctaItem{position:absolute;cursor:pointer}.ctaLevel0{z-index:0}.ctaLevel1{z-index:1}.ctaLevel2{z-index:2}.ctaLevel3{z-index:3}.thumbnail{position:absolute;z-index:1}.thumbnailsBg{position:absolute;z-index:0;background-color:#202833}.thumbnailVideo,.thumbnailVideoPaused{position:absolute;z-index:2}.thumbnailVideo{opacity:0}
+	body{
+		font-family: proxima-nova,"Helvetica Neue",Arial,sans-serif;
+		margin:0;
+		overflow: hidden;
+	}
+	.container{
+		position:relative;
+		background-color:#FAFAFA;
+		border: 1px solid #000000;
+	}
+	.autoplayClick{
+		position:absolute;
+		z-index:2;
+	}
+	.autoPlayer{
+		position:absolute;
+		z-index:1;
+	}
+	.player-hidden{
+		display:none;
+		z-index:0;
+	}
+	.hiddenPlayer0{
+		position:absolute;
+		opacity:0;
+		z-index:3;
+	}
+	.player0{
+		position:absolute;
+		opacity:1 !important;
+		z-index:3;
+	}
+	.ctaItem{
+		position:absolute;
+		cursor:pointer;
+	}
+	.ctaLevel0{
+		z-index:0;
+	}
+	.ctaLevel1{
+		z-index:1;
+	}
+	.ctaLevel2{
+		z-index:2;
+	}
+	.ctaLevel3{
+		z-index:3;
+	}
+	.thumbnail{
+		position:absolute;
+		z-index:1;
+	}
+	.thumbnailsBg{
+		position:absolute;
+		z-index:0;
+		background-color:#202833;
+	}
+	.thumbnailVideo{
+		position:absolute;
+		opacity:0;
+		z-index:2;
+	}
+	.thumbnailVideoPaused{
+		position:absolute;
+		z-index:2;
+	}
 	</style>
 </head>
 <body>
