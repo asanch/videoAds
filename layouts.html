@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apollo | Layouts</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/themes/cupertino/jquery-ui.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <style>
+  #testitem { border: solid 1px;width: 150px; height: 150px; padding: 0.5em; }
+  </style>
+  <script>
+	  var resizeTimeout;
+  	$(function() {
+		$("#testitem")
+			.draggable()
+			.resizable()
+			.resize(function(e){
+			console.log(document.getElementById("testitem").getBoundingClientRect());
+		});
+
+	});
+	  window.onload = function(){console.log(document.getElementById("testitem").getBoundingClientRect());document.getElementById("testitem").addEventListener("mouseup", resizeThrottler, false);}
+	function resizeThrottler() {
+		if( !resizeTimeout ) {
+			resizeTimeout = setTimeout(function(){
+									   resizeTimeout = null;
+									   actualResizeHandler();
+									   }, 100);
+		}
+	}
+	
+	function actualResizeHandler(){
+			console.log(document.getElementById("testitem").getBoundingClientRect());
+	}
+  </script>
+</head>
+
+<body>
+<div id="testitem">
+<h2>Item</h2>
+</div>
+</body>
+</html>

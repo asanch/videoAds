@@ -1,0 +1,265 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apollo | Artboard</title>
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/themes/cupertino/jquery-ui.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+  <style>
+	  body{font-family:proxima-nova,"Helvetica Neue",Arial,sans-serif;font-size:13px;}
+	  #menu{height:50px;width:100%;position:relative;display:block;}
+  	  #artboard{width: 970px; height: 250px;display:inline-block;position:relative;vertical-align:top;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;background-color:#FFFFFF;}
+	  #toolbar{border: solid 1px;height:700px;width:210px;display:inline-block;position:relative;/*background-color:#535353;*/}
+	  #elmt{width:100px;height:100px;border: solid 1px;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;}
+	  .tool{padding:10px;}
+	  .newElementType{position:relative;text-align:center;}
+	  .newElementItem{display:inline-block;margin:5px 10px;padding:10px;}.newElementItem:hover{background-color:#ffffff;cursor:pointer;}
+	  .glyphicon.glyphicon-film{font-size: 25px;}.glyphicon.glyphicon-picture{font-size: 25px;}.glyphicon.glyphicon-text-height{font-size: 25px;}
+	  #editElement >input{width:140px;}
+	  #editElement{text-align:right;}
+	  #applyElementChanges{margin:5px 10px 0px 0px;}
+  </style>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+    <!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script>
+	  window.onload = function(){
+		  document.getElementById('applyElementChanges').addEventListener('click', function(){
+			  var elementUpdates = {'name':document.getElementById('elmtName').value,
+								   'left': document.getElementById('elmtLeft').value,
+								   'top': document.getElementById('elmtTop').value,
+								   'height': document.getElementById('elmtHeight').value,
+								   'width': document.getElementById('elmtWidth').value};
+			  console.log(activeState.getActiveElement());
+			  activeState.updateActiveElement(elementUpdates);
+		  });
+		  document.getElementById('newElementPlayer').addEventListener('mouseover', function(){
+			  var newElementTypeLabel = document.getElementById('newElementTypeLabel');
+			  newElementTypeLabel.innerHTML = 'Player';
+		  });
+		  document.getElementById('newElementImage').addEventListener('mouseover', function(){
+			  var newElementTypeLabel = document.getElementById('newElementTypeLabel');
+			  newElementTypeLabel.innerHTML = 'Image';
+		  });
+		  document.getElementById('newElementText').addEventListener('mouseover', function(){
+			  var newElementTypeLabel = document.getElementById('newElementTypeLabel');
+			  newElementTypeLabel.innerHTML = 'Text';
+		  });
+		  document.getElementById('newElementPlayer').addEventListener('click', function(){
+			  document.getElementById('newElementPlayer').style.backgroundColor = '#ffffff';
+			  document.getElementById('artboard').style.cursor = 'crosshair';
+			  activeState.activateCreator(document.getElementById('newElementPlayer'));
+		  });
+		  document.getElementById('newElementImage').addEventListener('click', function(){
+			  document.getElementById('newElementImage').style.backgroundColor = '#ffffff';
+			  document.getElementById('artboard').style.cursor = 'crosshair';
+			  activeState.activateCreator(document.getElementById('newElementImage'));
+		  });
+		  document.getElementById('newElementText').addEventListener('click', function(){
+			  document.getElementById('newElementText').style.backgroundColor = '#ffffff';
+			  document.getElementById('artboard').style.cursor = 'text';
+			  activeState.activateCreator(document.getElementById('newElementText'));
+		  });
+		  document.getElementById('artboard').addEventListener('click', function(){
+			  if(activeState.getActiveCreator() != null){
+				  var artboard = document.getElementById('artboard');
+				  var newElement = elementFactory.create(artboard, activeState.getActiveCreator());
+				  activeState.setActiveElement(newElement);
+				  var activeCreator = activeState.getActiveCreator();
+				  activeCreator.style.backgroundColor = 'transparent';
+				  artboard.style.cursor = 'default';
+				  activeState.disableCreator();
+			  }
+		  });
+
+	  };
+	  function elmtValuesDisplay(target){
+		  if(target.parentElement.id != 'artboard'){
+			  var elmt = document.getElementById(target.parentElement.id);
+		  }else{
+			  var elmt = document.getElementById(target.id);
+		  }
+		  var elmtDims = elmt.getBoundingClientRect();
+		  var artboardDims = document.getElementById('artboard').getBoundingClientRect();
+		  document.getElementById('elmtWidth').value = elmtDims.width;
+		  document.getElementById('elmtHeight').value = elmtDims.height;
+		  document.getElementById('elmtTop').value = elmtDims.top - artboardDims.top;
+		  document.getElementById('elmtLeft').value = elmtDims.left - artboardDims.left;
+		  document.getElementById('elmtName').value = elmt.name;
+	  }
+	  var activeState = (function(){
+		  var activeElement = null;
+		  var layoutElements = [];
+		  var activeElementCreator = null;
+		  
+		  var setActiveElement = function(target){
+			  if(layoutElements.indexOf(target) !== -1){
+				  layoutElements.append(target);
+			  }
+			  activeElement = target;
+			  return true;
+		  }
+				  
+		  var getActiveElement = function(){
+			  return activeElement;
+		  }
+		  
+		  var getActiveCreator = function(){
+			  return activeElementCreator;
+		  }
+		  
+		  var updateActiveElement = function(elementUpdates){
+			  	activeElement.HTMLElement.name = String(elementUpdates.name);
+				activeElement.HTMLElement.style.top = String(elementUpdates.top)+'px';
+				activeElement.HTMLElement.style.left = String(elementUpdates.left)+'px';
+				activeElement.HTMLElement.style.height = String(elementUpdates.height)+'px';
+				activeElement.HTMLElement.style.width = String(elementUpdates.width)+'px';
+			  return true;
+		  }
+		  
+		  var activateCreator = function(type){
+			  activeElementCreator = type;
+			  return true;
+		  }
+		  
+		  var disableCreator = function(){
+			  activeElementCreator = null;
+			  return true;
+		  }
+
+		  return {
+			  setActiveElement: setActiveElement,
+			  getActiveElement: getActiveElement,
+			  updateActiveElement: updateActiveElement,
+			  activateCreator: activateCreator,
+			  disableCreator: disableCreator,
+			  getActiveCreator: getActiveCreator,
+		  }
+	  })();
+	  
+	var elementFactory = {
+		create: function(parent, type) {
+    		return new Element(parent, type);
+  	}};
+	var Element = (function elementClosure(){
+		function Element(parent, type){
+			var uuid = 'elmt'+String(Math.floor((Math.random() * 100) + 1));
+			this.HTMLElement = document.createElement('div');
+			this.HTMLElement.className += uuid;
+			this.HTMLElement.id = uuid;
+			this.HTMLElement.name = 'New Element';
+			this.HTMLElement.style = 'width:100px;height:100px;border:solid 1px;';
+			this.HTMLElement.addEventListener('click', function(){$("."+String(event.target.className)).draggable({containment: "parent",cursor: "move"}).resizable().resize(elmtValuesDisplay(event.target));activeState.setActiveElement(this);});
+			parent.appendChild(this.HTMLElement);
+		}
+		Element.prototype = {
+/*			updateActiveElement: function(elementUpdates) {
+				this.HTMLElement.name = elementUpdates.name;
+				this.HTMLElement.top = elementUpdates.top;
+				this.HTMLElement.left = elementUpdates.left;
+				this.HTMLElement.height = elementUpdates.height;
+				this.HTMLElement.width = elementUpdates.width;
+				return this;
+    		}*/
+		}
+		return Element;
+	})();
+  </script>
+</head>
+<body>
+  <div id="wrapper">
+	<div class="border-bottom">
+        <nav class="navbar navbar-static-top black-bg" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header brandWrapper">
+		<a href="/"><img alt="image" class="brandIconNav" src="https://s3-us-west-2.amazonaws.com/apollo-creative/quantcastBrand.png"></a>
+        </div>
+            <ul class="nav navbar-top-links navbar-right">
+                <li>
+                    <span class="welcome-message">Welcome to Project Apollo</span>
+                </li>
+
+	        <li class="dropdown">
+                        <a aria-expanded="false" role="button" class="navItemdropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i> Sanchez, Aaron  <span class="caret"></span></a>
+                        <ul role="menu" class="dropdown-menu">
+		            <li>
+                    		<a href="/logoutProcess/">
+                        		<i class="glyphicon glyphicon-off"></i> Log out
+                    		</a>
+             	  	   </li>
+                        </ul>
+                </li>
+		<li class="dropdown">
+			<a aria-expanded="false" role="button" class="navItem dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-question-sign"></i><span class="caret"></span></a>
+			<ul role="menu" class="dropdown-menu">
+				<li>
+					<a>User Manual</a>
+				</li>
+			</ul>
+		</li>
+            </ul>
+        </nav>
+        </div>
+<div>
+<div id="toolbar">
+ <ul class="nav nav-tabs" role="tablist">
+<!--    <li role="presentation"><a href="#adSettings" aria-controls="home" role="tab" data-toggle="tab">Ad</a></li>-->
+    <li role="presentation" class="active"><a href="#layoutSettings" aria-controls="profile" role="tab" data-toggle="tab">Layouts</a></li>
+    <li role="presentation"><a href="#elementSettings" aria-controls="messages" role="tab" data-toggle="tab">Elements</a></li>
+  </ul>
+   <div class="tab-content">
+<!--    <div role="tabpanel" class="tab-pane active" id="adSettings">
+    </div>-->
+    <div role="tabpanel" class="tab-pane" id="layoutSettings">
+    </div>
+    <div role="tabpanel" class="tab-pane" id="elementSettings">
+    	<div id="createElement" class="tool">
+	<label id="newElementTypeLabel">New Element Type: </label><br>
+	
+	<div class="newElementType">
+		<div id="newElementPlayer" class="newElementItem">
+			<span class="glyphicon glyphicon-film"></span>
+		</div>
+		<div id="newElementImage" class="newElementItem">
+			<span class="glyphicon glyphicon-picture"></span>
+		</div>
+		<div id="newElementText" class="newElementItem">
+			<span class="glyphicon glyphicon-text-height"></span>
+		</div>
+	</div><br>
+	</div>
+<div id="editElement" class="tool">
+	<label>Name:</label>
+	<input id="elmtName" type="text"/><br>
+	<label>W:</label>
+	<input id="elmtWidth" type="text"/><br>
+	<label>H:</label>
+	<input id="elmtHeight" type="text"/><br>
+	<label>Top:</label>
+	<input id="elmtTop" type="text"/><br>
+	<label>Left:</label>
+	<input id="elmtLeft" type="text"/><br>
+<button id="applyElementChanges">Apply</button>
+</div>
+    </div>
+  </div>
+</div>
+<div id="artboard">
+<!--<div id="elmt333"></div>-->
+</div>
+       </div>
+       <div class="footer">
+            <div class="pull-right">
+                 <strong>Ad Foundry</strong>
+            </div>
+            <div>
+                <strong>Copyright</strong> Quantcast &copy; 2017
+            </div>
+        </div>
+ </div> <!--- end wrapper -->
+
+</body>
+</html>
